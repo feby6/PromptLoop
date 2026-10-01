@@ -1,0 +1,3 @@
+name: gsm8k
+description: Solve the grade-school maths word problem and give the final answer.
+scorer: exact

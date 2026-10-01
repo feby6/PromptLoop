@@ -1,0 +1,469 @@
+{
+  "task_name": "invoice_extraction",
+  "target_model": "groq/qwen/qwen3.8-27b",
+  "optimizer_model": "groq/qwen/qwen3.8-27b",
+  "scorer": "json_match",
+  "best_candidate": {
+    "id": "it0-c0",
+    "prompt": "You are a data extraction engine. Parse the provided invoice or receipt text and output a JSON object with keys: vendor, invoice_number, date, total, and currency. The 'date' must be in YYYY-MM-DD format. 'total' must be a number. 'currency' must be the 3-letter ISO code. If a field is missing, use null. Output only the JSON object.",
+    "iteration": 0,
+    "parent_ids": []
+  },
+  "train_score": 1.0,
+  "val_score": 0.9666666666666667,
+  "val_eval": {
+    "candidate_id": "it0-c0",
+    "results": [
+      {
+        "input": "INVOICE 2025/044\nOliveira & Filhos Lda\nData: 19/02/2025\nTotal a pagar: 1.250,75 €",
+        "expected_output": "{\"vendor\": \"Oliveira & Filhos Lda\", \"invoice_number\": \"2025/044\", \"date\": \"2025-02-19\", \"total\": 1250.75, \"currency\": \"EUR\"}",
+        "output": "{\n  \"vendor\": \"Oliveira & Filhos Lda\",\n  \"invoice_number\": \"2025/044\",\n  \"date\": \"2025-02-19\",\n  \"total\": 1250.75,\n  \"currency\": \"EUR\"\n}",
+        "score": 1.0,
+        "error": null
+      },
+      {
+        "input": "Receipt — Corner Books — Mar 30, 2025 — 3 items — total $42.97 — thank you!",
+        "expected_output": "{\"vendor\": \"Corner Books\", \"invoice_number\": null, \"date\": \"2025-03-30\", \"total\": 42.97, \"currency\": \"USD\"}",
+        "output": "{\n  \"vendor\": \"Corner Books\",\n  \"invoice_number\": null,\n  \"date\": \"2025-03-30\",\n  \"total\": 42.97,\n  \"currency\": \"USD\"\n}",
+        "score": 1.0,
+        "error": null
+      },
+      {
+        "input": "Bill No. HB-2291 | Hotel Bayview, Sydney | Check-out 14/01/2025 | Room 2 nights A$398.00 | Minibar A$24.00 | Total A$422.00",
+        "expected_output": "{\"vendor\": \"Hotel Bayview\", \"invoice_number\": \"HB-2291\", \"date\": \"2025-01-14\", \"total\": 422.0, \"currency\": \"AUD\"}",
+        "output": "{\n  \"vendor\": \"Hotel Bayview, Sydney\",\n  \"invoice_number\": \"HB-2291\",\n  \"date\": \"2025-01-14\",\n  \"total\": 422.0,\n  \"currency\": \"AUD\"\n}",
+        "score": 0.8,
+        "error": null
+      },
+      {
+        "input": "SaaSly Inc.\nInvoice #SL-90017\nIssued: January 3rd, 2025\nPro plan (annual) $1,188.00\nDiscount -$118.80\nTotal $1,069.20",
+        "expected_output": "{\"vendor\": \"SaaSly Inc.\", \"invoice_number\": \"SL-90017\", \"date\": \"2025-01-03\", \"total\": 1069.2, \"currency\": \"USD\"}",
+        "output": "{\n  \"vendor\": \"SaaSly Inc.\",\n  \"invoice_number\": \"SL-90017\",\n  \"date\": \"2025-01-03\",\n  \"total\": 1069.20,\n  \"currency\": \"USD\"\n}",
+        "score": 1.0,
+        "error": null
+      },
+      {
+        "input": "Kwality Sweets — bill 5521 — 2025-03-01 — total Rs. 1,340",
+        "expected_output": "{\"vendor\": \"Kwality Sweets\", \"invoice_number\": \"5521\", \"date\": \"2025-03-01\", \"total\": 1340.0, \"currency\": \"INR\"}",
+        "output": "{\n  \"vendor\": \"Kwality Sweets\",\n  \"invoice_number\": \"5521\",\n  \"date\": \"2025-03-01\",\n  \"total\": 1340,\n  \"currency\": \"INR\"\n}",
+        "score": 1.0,
+        "error": null
+      },
+      {
+        "input": "Faktura nr 12/03/2025 wystawiona przez Kowalski Sp. z o.o. dnia 2025-03-18, do zapłaty 3 690,00 PLN",
+        "expected_output": "{\"vendor\": \"Kowalski Sp. z o.o.\", \"invoice_number\": \"12/03/2025\", \"date\": \"2025-03-18\", \"total\": 3690.0, \"currency\": \"PLN\"}",
+        "output": "{\n  \"vendor\": \"Kowalski Sp. z o.o.\",\n  \"invoice_number\": \"12/03/2025\",\n  \"date\": \"2025-03-18\",\n  \"total\": 3690.00,\n  \"currency\": \"PLN\"\n}",
+        "score": 1.0,
+        "error": null
+      }
+    ],
+    "mean_score": 0.9666666666666667
+  },
+  "baseline_train_score": 0.7333333333333334,
+  "baseline_val_score": 0.6666666666666666,
+  "stop_reason": "target_reached",
+  "history": [
+    {
+      "iteration": 0,
+      "candidates": [
+        {
+          "id": "baseline",
+          "prompt": "Extract fields from the text of an invoice or receipt and return them as JSON with the keys vendor, invoice_number, date, total and currency.",
+          "iteration": 0,
+          "parent_ids": []
+        },
+        {
+          "id": "it0-c0",
+          "prompt": "You are a data extraction engine. Parse the provided invoice or receipt text and output a JSON object with keys: vendor, invoice_number, date, total, and currency. The 'date' must be in YYYY-MM-DD format. 'total' must be a number. 'currency' must be the 3-letter ISO code. If a field is missing, use null. Output only the JSON object.",
+          "iteration": 0,
+          "parent_ids": []
+        },
+        {
+          "id": "it0-c1",
+          "prompt": "Extract specific fields from the input text into a strict JSON format. Follow these rules:\n1. **vendor**: The legal name of the business. Exclude addresses, slogans, or department names.\n2. **invoice_number**: The unique identifier (e.g., A-1043, 88213). Exclude the prefix word 'Invoice' or 'Order'. Set to null if not present.\n3. **date**: Convert any date format to ISO 8601 (YYYY-MM-DD). Be careful with ambiguous day/month/year orders based on context (e.g., European dates usually DD.MM.YYYY, US usually MM/DD/YYYY).\n4. **total**: The final amount due, including taxes/tips. Use a numeric type (float/int), removing currency symbols and grouping separators (commas/periods).\n5. **currency**: Map symbols/codes to ISO 4217 codes (e.g., £->GBP, $->USD, €->EUR, ₹->INR, CAD->CAD). If ambiguous, use the most common currency for the region implied by the vendor.\n\nOutput ONLY the valid JSON object. Do not include markdown code blocks, explanations, or preamble.",
+          "iteration": 0,
+          "parent_ids": []
+        },
+        {
+          "id": "it0-c2",
+          "prompt": "Analyze the document text and return a JSON object containing the extracted fields. Use the following example as a guide for formatting and edge cases:\n\nInput:\nReceipt from Blue Bottle Coffee — order 88213 — March 9, 2025 — 2x latte $11.50, tip $2.00, total paid $13.50\nOutput:\n{\"vendor\": \"Blue Bottle Coffee\", \"invoice_number\": \"88213\", \"date\": \"2025-03-09\", \"total\": 13.5, \"currency\": \"USD\"}\n\nRules:\n- 'vendor' is the business name.\n- 'invoice_number' is the order/receipt ID, or null if absent.\n- 'date' is always YYYY-MM-DD.\n- 'total' is the final numeric value (e.g., 1440.0, not \"£1,440.00\").\n- 'currency' is the 3-letter code (GBP, USD, EUR, etc.).\n\nProcess the user's input now. Respond with only the JSON object.",
+          "iteration": 0,
+          "parent_ids": []
+        }
+      ],
+      "evals": [
+        {
+          "candidate_id": "baseline",
+          "results": [
+            {
+              "input": "INVOICE #A-1043\nAcme Tools Ltd, 12 Mill Road, Leeds\nDate: 03/04/2025\nSubtotal £1,200.00\nVAT 20% £240.00\nTOTAL DUE £1,440.00",
+              "expected_output": "{\"vendor\": \"Acme Tools Ltd\", \"invoice_number\": \"A-1043\", \"date\": \"2025-04-03\", \"total\": 1440.0, \"currency\": \"GBP\"}",
+              "output": "```json\n{\n  \"vendor\": \"Acme Tools Ltd\",\n  \"invoice_number\": \"A-1043\",\n  \"date\": \"03/04/2025\",\n  \"total\": \"1440.00\",\n  \"currency\": \"GBP\"\n}\n```",
+              "score": 0.6,
+              "error": null
+            },
+            {
+              "input": "Receipt from Blue Bottle Coffee — order 88213 — March 9, 2025 — 2x latte $11.50, tip $2.00, total paid $13.50",
+              "expected_output": "{\"vendor\": \"Blue Bottle Coffee\", \"invoice_number\": \"88213\", \"date\": \"2025-03-09\", \"total\": 13.5, \"currency\": \"USD\"}",
+              "output": "```json\n{\n  \"vendor\": \"Blue Bottle Coffee\",\n  \"invoice_number\": \"88213\",\n  \"date\": \"2025-03-09\",\n  \"total\": 13.50,\n  \"currency\": \"USD\"\n}\n```",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Rechnung Nr. 2025-0071\nMüller Elektro GmbH\nRechnungsdatum: 15.01.2025\nNetto 850,00 €\nMwSt 19% 161,50 €\nGesamtbetrag 1.011,50 €",
+              "expected_output": "{\"vendor\": \"Müller Elektro GmbH\", \"invoice_number\": \"2025-0071\", \"date\": \"2025-01-15\", \"total\": 1011.5, \"currency\": \"EUR\"}",
+              "output": "```json\n{\n  \"vendor\": \"Müller Elektro GmbH\",\n  \"invoice_number\": \"2025-0071\",\n  \"date\": \"15.01.2025\",\n  \"total\": \"1.011,50\",\n  \"currency\": \"EUR\"\n}\n```",
+              "score": 0.6,
+              "error": null
+            },
+            {
+              "input": "Thanks for shopping at QuickMart! 2025-02-28 14:02\nMilk 1.99\nBread 3.49\nTOTAL 5.48 CAD\nNo receipt number",
+              "expected_output": "{\"vendor\": \"QuickMart\", \"invoice_number\": null, \"date\": \"2025-02-28\", \"total\": 5.48, \"currency\": \"CAD\"}",
+              "output": "```json\n{\n  \"vendor\": \"QuickMart\",\n  \"invoice_number\": null,\n  \"date\": \"2025-02-28\",\n  \"total\": \"5.48\",\n  \"currency\": \"CAD\"\n}\n```",
+              "score": 0.8,
+              "error": null
+            },
+            {
+              "input": "TAX INVOICE\nSupplier: Sharma Textiles Pvt Ltd\nInvoice No: ST/24-25/392\nDated 7 Feb 2025\nGrand Total: ₹ 48,560",
+              "expected_output": "{\"vendor\": \"Sharma Textiles Pvt Ltd\", \"invoice_number\": \"ST/24-25/392\", \"date\": \"2025-02-07\", \"total\": 48560.0, \"currency\": \"INR\"}",
+              "output": "```json\n{\n  \"vendor\": \"Sharma Textiles Pvt Ltd\",\n  \"invoice_number\": \"ST/24-25/392\",\n  \"date\": \"7 Feb 2025\",\n  \"total\": \"48560\",\n  \"currency\": \"INR\"\n}\n```",
+              "score": 0.6,
+              "error": null
+            },
+            {
+              "input": "cloudhost.io billing — invoice INV-55120 — period Jan 2025 — issued 2025-02-01 — amount charged: USD 249.00 (card ending 4242)",
+              "expected_output": "{\"vendor\": \"cloudhost.io\", \"invoice_number\": \"INV-55120\", \"date\": \"2025-02-01\", \"total\": 249.0, \"currency\": \"USD\"}",
+              "output": "```json\n{\n  \"vendor\": \"cloudhost.io\",\n  \"invoice_number\": \"INV-55120\",\n  \"date\": \"2025-02-01\",\n  \"total\": \"249.00\",\n  \"currency\": \"USD\"\n}\n```",
+              "score": 0.8,
+              "error": null
+            },
+            {
+              "input": "From: Nakamura Design Studio\nInvoice 0042\n2025年3月12日\nDesign work ¥180,000\nConsumption tax ¥18,000\nTotal ¥198,000",
+              "expected_output": "{\"vendor\": \"Nakamura Design Studio\", \"invoice_number\": \"0042\", \"date\": \"2025-03-12\", \"total\": 198000.0, \"currency\": \"JPY\"}",
+              "output": "```json\n{\n  \"vendor\": \"Nakamura Design Studio\",\n  \"invoice_number\": \"0042\",\n  \"date\": \"2025-03-12\",\n  \"total\": \"198000\",\n  \"currency\": \"JPY\"\n}\n```",
+              "score": 0.8,
+              "error": null
+            },
+            {
+              "input": "Invoice\nPete's Plumbing\nNo. 7781   Date 11/30/2024\nLabour 3h @ $85 = $255\nParts $62.40\nAmount due: $317.40\nPrevious balance $0.00",
+              "expected_output": "{\"vendor\": \"Pete's Plumbing\", \"invoice_number\": \"7781\", \"date\": \"2024-11-30\", \"total\": 317.4, \"currency\": \"USD\"}",
+              "output": "```json\n{\n  \"vendor\": \"Pete's Plumbing\",\n  \"invoice_number\": \"7781\",\n  \"date\": \"11/30/2024\",\n  \"total\": \"317.40\",\n  \"currency\": \"USD\"\n}\n```",
+              "score": 0.6,
+              "error": null
+            },
+            {
+              "input": "FACTURE N° F2025-118 — Boulangerie Dupont — 22/03/2025 — Total TTC : 37,80 EUR",
+              "expected_output": "{\"vendor\": \"Boulangerie Dupont\", \"invoice_number\": \"F2025-118\", \"date\": \"2025-03-22\", \"total\": 37.8, \"currency\": \"EUR\"}",
+              "output": "```json\n{\n  \"vendor\": \"Boulangerie Dupont\",\n  \"invoice_number\": \"F2025-118\",\n  \"date\": \"22/03/2025\",\n  \"total\": \"37.80\",\n  \"currency\": \"EUR\"\n}\n```",
+              "score": 0.6,
+              "error": null
+            },
+            {
+              "input": "Uber receipt\nTrip on Apr 2, 2025\nFare A$23.10\nBooking fee A$2.50\nTotal A$25.60",
+              "expected_output": "{\"vendor\": \"Uber\", \"invoice_number\": null, \"date\": \"2025-04-02\", \"total\": 25.6, \"currency\": \"AUD\"}",
+              "output": "```json\n{\n  \"vendor\": \"Uber\",\n  \"invoice_number\": null,\n  \"date\": \"2025-04-02\",\n  \"total\": 25.60,\n  \"currency\": \"AUD\"\n}\n```",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Statement / Invoice 3391-B from Northwind Traders. Invoice date: 2024-12-05. Due date: 2025-01-04. Balance due CHF 2'350.00",
+              "expected_output": "{\"vendor\": \"Northwind Traders\", \"invoice_number\": \"3391-B\", \"date\": \"2024-12-05\", \"total\": 2350.0, \"currency\": \"CHF\"}",
+              "output": "```json\n{\n  \"vendor\": \"Northwind Traders\",\n  \"invoice_number\": \"3391-B\",\n  \"date\": \"2024-12-05\",\n  \"total\": \"2350.00\",\n  \"currency\": \"CHF\"\n}\n```",
+              "score": 0.8,
+              "error": null
+            },
+            {
+              "input": "GreenLeaf Grocers receipt #000918\n05 Jan 2025\nItems: 12\nSUBTOTAL 41.20\nDISCOUNT -5.00\nTOTAL 36.20 USD",
+              "expected_output": "{\"vendor\": \"GreenLeaf Grocers\", \"invoice_number\": \"000918\", \"date\": \"2025-01-05\", \"total\": 36.2, \"currency\": \"USD\"}",
+              "output": "```json\n{\n  \"vendor\": \"GreenLeaf Grocers\",\n  \"invoice_number\": \"000918\",\n  \"date\": \"05 Jan 2025\",\n  \"total\": \"36.20\",\n  \"currency\": \"USD\"\n}\n```",
+              "score": 0.6,
+              "error": null
+            }
+          ],
+          "mean_score": 0.7333333333333334
+        },
+        {
+          "candidate_id": "it0-c0",
+          "results": [
+            {
+              "input": "INVOICE #A-1043\nAcme Tools Ltd, 12 Mill Road, Leeds\nDate: 03/04/2025\nSubtotal £1,200.00\nVAT 20% £240.00\nTOTAL DUE £1,440.00",
+              "expected_output": "{\"vendor\": \"Acme Tools Ltd\", \"invoice_number\": \"A-1043\", \"date\": \"2025-04-03\", \"total\": 1440.0, \"currency\": \"GBP\"}",
+              "output": "{\n  \"vendor\": \"Acme Tools Ltd\",\n  \"invoice_number\": \"A-1043\",\n  \"date\": \"2025-04-03\",\n  \"total\": 1440.0,\n  \"currency\": \"GBP\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Receipt from Blue Bottle Coffee — order 88213 — March 9, 2025 — 2x latte $11.50, tip $2.00, total paid $13.50",
+              "expected_output": "{\"vendor\": \"Blue Bottle Coffee\", \"invoice_number\": \"88213\", \"date\": \"2025-03-09\", \"total\": 13.5, \"currency\": \"USD\"}",
+              "output": "{\n  \"vendor\": \"Blue Bottle Coffee\",\n  \"invoice_number\": \"88213\",\n  \"date\": \"2025-03-09\",\n  \"total\": 13.50,\n  \"currency\": \"USD\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Rechnung Nr. 2025-0071\nMüller Elektro GmbH\nRechnungsdatum: 15.01.2025\nNetto 850,00 €\nMwSt 19% 161,50 €\nGesamtbetrag 1.011,50 €",
+              "expected_output": "{\"vendor\": \"Müller Elektro GmbH\", \"invoice_number\": \"2025-0071\", \"date\": \"2025-01-15\", \"total\": 1011.5, \"currency\": \"EUR\"}",
+              "output": "{\n  \"vendor\": \"Müller Elektro GmbH\",\n  \"invoice_number\": \"2025-0071\",\n  \"date\": \"2025-01-15\",\n  \"total\": 1011.5,\n  \"currency\": \"EUR\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Thanks for shopping at QuickMart! 2025-02-28 14:02\nMilk 1.99\nBread 3.49\nTOTAL 5.48 CAD\nNo receipt number",
+              "expected_output": "{\"vendor\": \"QuickMart\", \"invoice_number\": null, \"date\": \"2025-02-28\", \"total\": 5.48, \"currency\": \"CAD\"}",
+              "output": "{\n  \"vendor\": \"QuickMart\",\n  \"invoice_number\": null,\n  \"date\": \"2025-02-28\",\n  \"total\": 5.48,\n  \"currency\": \"CAD\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "TAX INVOICE\nSupplier: Sharma Textiles Pvt Ltd\nInvoice No: ST/24-25/392\nDated 7 Feb 2025\nGrand Total: ₹ 48,560",
+              "expected_output": "{\"vendor\": \"Sharma Textiles Pvt Ltd\", \"invoice_number\": \"ST/24-25/392\", \"date\": \"2025-02-07\", \"total\": 48560.0, \"currency\": \"INR\"}",
+              "output": "{\n  \"vendor\": \"Sharma Textiles Pvt Ltd\",\n  \"invoice_number\": \"ST/24-25/392\",\n  \"date\": \"2025-02-07\",\n  \"total\": 48560,\n  \"currency\": \"INR\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "cloudhost.io billing — invoice INV-55120 — period Jan 2025 — issued 2025-02-01 — amount charged: USD 249.00 (card ending 4242)",
+              "expected_output": "{\"vendor\": \"cloudhost.io\", \"invoice_number\": \"INV-55120\", \"date\": \"2025-02-01\", \"total\": 249.0, \"currency\": \"USD\"}",
+              "output": "{\n  \"vendor\": \"cloudhost.io\",\n  \"invoice_number\": \"INV-55120\",\n  \"date\": \"2025-02-01\",\n  \"total\": 249.0,\n  \"currency\": \"USD\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "From: Nakamura Design Studio\nInvoice 0042\n2025年3月12日\nDesign work ¥180,000\nConsumption tax ¥18,000\nTotal ¥198,000",
+              "expected_output": "{\"vendor\": \"Nakamura Design Studio\", \"invoice_number\": \"0042\", \"date\": \"2025-03-12\", \"total\": 198000.0, \"currency\": \"JPY\"}",
+              "output": "{\n  \"vendor\": \"Nakamura Design Studio\",\n  \"invoice_number\": \"0042\",\n  \"date\": \"2025-03-12\",\n  \"total\": 198000,\n  \"currency\": \"JPY\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Invoice\nPete's Plumbing\nNo. 7781   Date 11/30/2024\nLabour 3h @ $85 = $255\nParts $62.40\nAmount due: $317.40\nPrevious balance $0.00",
+              "expected_output": "{\"vendor\": \"Pete's Plumbing\", \"invoice_number\": \"7781\", \"date\": \"2024-11-30\", \"total\": 317.4, \"currency\": \"USD\"}",
+              "output": "{\n  \"vendor\": \"Pete's Plumbing\",\n  \"invoice_number\": \"7781\",\n  \"date\": \"2024-11-30\",\n  \"total\": 317.4,\n  \"currency\": \"USD\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "FACTURE N° F2025-118 — Boulangerie Dupont — 22/03/2025 — Total TTC : 37,80 EUR",
+              "expected_output": "{\"vendor\": \"Boulangerie Dupont\", \"invoice_number\": \"F2025-118\", \"date\": \"2025-03-22\", \"total\": 37.8, \"currency\": \"EUR\"}",
+              "output": "{\n  \"vendor\": \"Boulangerie Dupont\",\n  \"invoice_number\": \"F2025-118\",\n  \"date\": \"2025-03-22\",\n  \"total\": 37.80,\n  \"currency\": \"EUR\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Uber receipt\nTrip on Apr 2, 2025\nFare A$23.10\nBooking fee A$2.50\nTotal A$25.60",
+              "expected_output": "{\"vendor\": \"Uber\", \"invoice_number\": null, \"date\": \"2025-04-02\", \"total\": 25.6, \"currency\": \"AUD\"}",
+              "output": "{\n  \"vendor\": \"Uber\",\n  \"invoice_number\": null,\n  \"date\": \"2025-04-02\",\n  \"total\": 25.60,\n  \"currency\": \"AUD\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Statement / Invoice 3391-B from Northwind Traders. Invoice date: 2024-12-05. Due date: 2025-01-04. Balance due CHF 2'350.00",
+              "expected_output": "{\"vendor\": \"Northwind Traders\", \"invoice_number\": \"3391-B\", \"date\": \"2024-12-05\", \"total\": 2350.0, \"currency\": \"CHF\"}",
+              "output": "{\n  \"vendor\": \"Northwind Traders\",\n  \"invoice_number\": \"3391-B\",\n  \"date\": \"2024-12-05\",\n  \"total\": 2350.0,\n  \"currency\": \"CHF\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "GreenLeaf Grocers receipt #000918\n05 Jan 2025\nItems: 12\nSUBTOTAL 41.20\nDISCOUNT -5.00\nTOTAL 36.20 USD",
+              "expected_output": "{\"vendor\": \"GreenLeaf Grocers\", \"invoice_number\": \"000918\", \"date\": \"2025-01-05\", \"total\": 36.2, \"currency\": \"USD\"}",
+              "output": "{\n  \"vendor\": \"GreenLeaf Grocers\",\n  \"invoice_number\": \"000918\",\n  \"date\": \"2025-01-05\",\n  \"total\": 36.20,\n  \"currency\": \"USD\"\n}",
+              "score": 1.0,
+              "error": null
+            }
+          ],
+          "mean_score": 1.0
+        },
+        {
+          "candidate_id": "it0-c1",
+          "results": [
+            {
+              "input": "INVOICE #A-1043\nAcme Tools Ltd, 12 Mill Road, Leeds\nDate: 03/04/2025\nSubtotal £1,200.00\nVAT 20% £240.00\nTOTAL DUE £1,440.00",
+              "expected_output": "{\"vendor\": \"Acme Tools Ltd\", \"invoice_number\": \"A-1043\", \"date\": \"2025-04-03\", \"total\": 1440.0, \"currency\": \"GBP\"}",
+              "output": "{\n  \"vendor\": \"Acme Tools Ltd\",\n  \"invoice_number\": \"A-1043\",\n  \"date\": \"2025-04-03\",\n  \"total\": 1440.00,\n  \"currency\": \"GBP\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Receipt from Blue Bottle Coffee — order 88213 — March 9, 2025 — 2x latte $11.50, tip $2.00, total paid $13.50",
+              "expected_output": "{\"vendor\": \"Blue Bottle Coffee\", \"invoice_number\": \"88213\", \"date\": \"2025-03-09\", \"total\": 13.5, \"currency\": \"USD\"}",
+              "output": "{\n  \"vendor\": \"Blue Bottle Coffee\",\n  \"invoice_number\": \"88213\",\n  \"date\": \"2025-03-09\",\n  \"total\": 13.50,\n  \"currency\": \"USD\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Rechnung Nr. 2025-0071\nMüller Elektro GmbH\nRechnungsdatum: 15.01.2025\nNetto 850,00 €\nMwSt 19% 161,50 €\nGesamtbetrag 1.011,50 €",
+              "expected_output": "{\"vendor\": \"Müller Elektro GmbH\", \"invoice_number\": \"2025-0071\", \"date\": \"2025-01-15\", \"total\": 1011.5, \"currency\": \"EUR\"}",
+              "output": "{\n  \"vendor\": \"Müller Elektro GmbH\",\n  \"invoice_number\": \"2025-0071\",\n  \"date\": \"2025-01-15\",\n  \"total\": 1011.50,\n  \"currency\": \"EUR\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Thanks for shopping at QuickMart! 2025-02-28 14:02\nMilk 1.99\nBread 3.49\nTOTAL 5.48 CAD\nNo receipt number",
+              "expected_output": "{\"vendor\": \"QuickMart\", \"invoice_number\": null, \"date\": \"2025-02-28\", \"total\": 5.48, \"currency\": \"CAD\"}",
+              "output": "{\n  \"vendor\": \"QuickMart\",\n  \"invoice_number\": null,\n  \"date\": \"2025-02-28\",\n  \"total\": 5.48,\n  \"currency\": \"CAD\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "TAX INVOICE\nSupplier: Sharma Textiles Pvt Ltd\nInvoice No: ST/24-25/392\nDated 7 Feb 2025\nGrand Total: ₹ 48,560",
+              "expected_output": "{\"vendor\": \"Sharma Textiles Pvt Ltd\", \"invoice_number\": \"ST/24-25/392\", \"date\": \"2025-02-07\", \"total\": 48560.0, \"currency\": \"INR\"}",
+              "output": "{\n  \"vendor\": \"Sharma Textiles Pvt Ltd\",\n  \"invoice_number\": \"ST/24-25/392\",\n  \"date\": \"2025-02-07\",\n  \"total\": 48560,\n  \"currency\": \"INR\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "cloudhost.io billing — invoice INV-55120 — period Jan 2025 — issued 2025-02-01 — amount charged: USD 249.00 (card ending 4242)",
+              "expected_output": "{\"vendor\": \"cloudhost.io\", \"invoice_number\": \"INV-55120\", \"date\": \"2025-02-01\", \"total\": 249.0, \"currency\": \"USD\"}",
+              "output": "{\n  \"vendor\": \"cloudhost.io\",\n  \"invoice_number\": \"INV-55120\",\n  \"date\": \"2025-02-01\",\n  \"total\": 249.0,\n  \"currency\": \"USD\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "From: Nakamura Design Studio\nInvoice 0042\n2025年3月12日\nDesign work ¥180,000\nConsumption tax ¥18,000\nTotal ¥198,000",
+              "expected_output": "{\"vendor\": \"Nakamura Design Studio\", \"invoice_number\": \"0042\", \"date\": \"2025-03-12\", \"total\": 198000.0, \"currency\": \"JPY\"}",
+              "output": "{\n  \"vendor\": \"Nakamura Design Studio\",\n  \"invoice_number\": \"0042\",\n  \"date\": \"2025-03-12\",\n  \"total\": 198000,\n  \"currency\": \"JPY\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Invoice\nPete's Plumbing\nNo. 7781   Date 11/30/2024\nLabour 3h @ $85 = $255\nParts $62.40\nAmount due: $317.40\nPrevious balance $0.00",
+              "expected_output": "{\"vendor\": \"Pete's Plumbing\", \"invoice_number\": \"7781\", \"date\": \"2024-11-30\", \"total\": 317.4, \"currency\": \"USD\"}",
+              "output": "{\n  \"vendor\": \"Pete's Plumbing\",\n  \"invoice_number\": \"7781\",\n  \"date\": \"2024-11-30\",\n  \"total\": 317.40,\n  \"currency\": \"USD\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "FACTURE N° F2025-118 — Boulangerie Dupont — 22/03/2025 — Total TTC : 37,80 EUR",
+              "expected_output": "{\"vendor\": \"Boulangerie Dupont\", \"invoice_number\": \"F2025-118\", \"date\": \"2025-03-22\", \"total\": 37.8, \"currency\": \"EUR\"}",
+              "output": "{\n  \"vendor\": \"Boulangerie Dupont\",\n  \"invoice_number\": \"F2025-118\",\n  \"date\": \"2025-03-22\",\n  \"total\": 37.80,\n  \"currency\": \"EUR\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Uber receipt\nTrip on Apr 2, 2025\nFare A$23.10\nBooking fee A$2.50\nTotal A$25.60",
+              "expected_output": "{\"vendor\": \"Uber\", \"invoice_number\": null, \"date\": \"2025-04-02\", \"total\": 25.6, \"currency\": \"AUD\"}",
+              "output": "{\n  \"vendor\": \"Uber\",\n  \"invoice_number\": null,\n  \"date\": \"2025-04-02\",\n  \"total\": 25.60,\n  \"currency\": \"AUD\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Statement / Invoice 3391-B from Northwind Traders. Invoice date: 2024-12-05. Due date: 2025-01-04. Balance due CHF 2'350.00",
+              "expected_output": "{\"vendor\": \"Northwind Traders\", \"invoice_number\": \"3391-B\", \"date\": \"2024-12-05\", \"total\": 2350.0, \"currency\": \"CHF\"}",
+              "output": "{\n  \"vendor\": \"Northwind Traders\",\n  \"invoice_number\": \"3391-B\",\n  \"date\": \"2024-12-05\",\n  \"total\": 2350.00,\n  \"currency\": \"CHF\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "GreenLeaf Grocers receipt #000918\n05 Jan 2025\nItems: 12\nSUBTOTAL 41.20\nDISCOUNT -5.00\nTOTAL 36.20 USD",
+              "expected_output": "{\"vendor\": \"GreenLeaf Grocers\", \"invoice_number\": \"000918\", \"date\": \"2025-01-05\", \"total\": 36.2, \"currency\": \"USD\"}",
+              "output": "{\n  \"vendor\": \"GreenLeaf Grocers\",\n  \"invoice_number\": \"000918\",\n  \"date\": \"2025-01-05\",\n  \"total\": 36.20,\n  \"currency\": \"USD\"\n}",
+              "score": 1.0,
+              "error": null
+            }
+          ],
+          "mean_score": 1.0
+        },
+        {
+          "candidate_id": "it0-c2",
+          "results": [
+            {
+              "input": "INVOICE #A-1043\nAcme Tools Ltd, 12 Mill Road, Leeds\nDate: 03/04/2025\nSubtotal £1,200.00\nVAT 20% £240.00\nTOTAL DUE £1,440.00",
+              "expected_output": "{\"vendor\": \"Acme Tools Ltd\", \"invoice_number\": \"A-1043\", \"date\": \"2025-04-03\", \"total\": 1440.0, \"currency\": \"GBP\"}",
+              "output": "{\n  \"vendor\": \"Acme Tools Ltd\",\n  \"invoice_number\": \"A-1043\",\n  \"date\": \"2025-04-03\",\n  \"total\": 1440.0,\n  \"currency\": \"GBP\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Receipt from Blue Bottle Coffee — order 88213 — March 9, 2025 — 2x latte $11.50, tip $2.00, total paid $13.50",
+              "expected_output": "{\"vendor\": \"Blue Bottle Coffee\", \"invoice_number\": \"88213\", \"date\": \"2025-03-09\", \"total\": 13.5, \"currency\": \"USD\"}",
+              "output": "{\n  \"vendor\": \"Blue Bottle Coffee\",\n  \"invoice_number\": \"88213\",\n  \"date\": \"2025-03-09\",\n  \"total\": 13.5,\n  \"currency\": \"USD\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Rechnung Nr. 2025-0071\nMüller Elektro GmbH\nRechnungsdatum: 15.01.2025\nNetto 850,00 €\nMwSt 19% 161,50 €\nGesamtbetrag 1.011,50 €",
+              "expected_output": "{\"vendor\": \"Müller Elektro GmbH\", \"invoice_number\": \"2025-0071\", \"date\": \"2025-01-15\", \"total\": 1011.5, \"currency\": \"EUR\"}",
+              "output": "{\n  \"vendor\": \"Müller Elektro GmbH\",\n  \"invoice_number\": \"2025-0071\",\n  \"date\": \"2025-01-15\",\n  \"total\": 1011.5,\n  \"currency\": \"EUR\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Thanks for shopping at QuickMart! 2025-02-28 14:02\nMilk 1.99\nBread 3.49\nTOTAL 5.48 CAD\nNo receipt number",
+              "expected_output": "{\"vendor\": \"QuickMart\", \"invoice_number\": null, \"date\": \"2025-02-28\", \"total\": 5.48, \"currency\": \"CAD\"}",
+              "output": "{\n  \"vendor\": \"QuickMart\",\n  \"invoice_number\": null,\n  \"date\": \"2025-02-28\",\n  \"total\": 5.48,\n  \"currency\": \"CAD\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "TAX INVOICE\nSupplier: Sharma Textiles Pvt Ltd\nInvoice No: ST/24-25/392\nDated 7 Feb 2025\nGrand Total: ₹ 48,560",
+              "expected_output": "{\"vendor\": \"Sharma Textiles Pvt Ltd\", \"invoice_number\": \"ST/24-25/392\", \"date\": \"2025-02-07\", \"total\": 48560.0, \"currency\": \"INR\"}",
+              "output": "{\n  \"vendor\": \"Sharma Textiles Pvt Ltd\",\n  \"invoice_number\": \"ST/24-25/392\",\n  \"date\": \"2025-02-07\",\n  \"total\": 48560.0,\n  \"currency\": \"INR\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "cloudhost.io billing — invoice INV-55120 — period Jan 2025 — issued 2025-02-01 — amount charged: USD 249.00 (card ending 4242)",
+              "expected_output": "{\"vendor\": \"cloudhost.io\", \"invoice_number\": \"INV-55120\", \"date\": \"2025-02-01\", \"total\": 249.0, \"currency\": \"USD\"}",
+              "output": "{\n  \"vendor\": \"cloudhost.io\",\n  \"invoice_number\": \"INV-55120\",\n  \"date\": \"2025-02-01\",\n  \"total\": 249.0,\n  \"currency\": \"USD\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "From: Nakamura Design Studio\nInvoice 0042\n2025年3月12日\nDesign work ¥180,000\nConsumption tax ¥18,000\nTotal ¥198,000",
+              "expected_output": "{\"vendor\": \"Nakamura Design Studio\", \"invoice_number\": \"0042\", \"date\": \"2025-03-12\", \"total\": 198000.0, \"currency\": \"JPY\"}",
+              "output": "{\n  \"vendor\": \"Nakamura Design Studio\",\n  \"invoice_number\": \"0042\",\n  \"date\": \"2025-03-12\",\n  \"total\": 198000.0,\n  \"currency\": \"JPY\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Invoice\nPete's Plumbing\nNo. 7781   Date 11/30/2024\nLabour 3h @ $85 = $255\nParts $62.40\nAmount due: $317.40\nPrevious balance $0.00",
+              "expected_output": "{\"vendor\": \"Pete's Plumbing\", \"invoice_number\": \"7781\", \"date\": \"2024-11-30\", \"total\": 317.4, \"currency\": \"USD\"}",
+              "output": "{\n  \"vendor\": \"Pete's Plumbing\",\n  \"invoice_number\": \"7781\",\n  \"date\": \"2024-11-30\",\n  \"total\": 317.4,\n  \"currency\": \"USD\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "FACTURE N° F2025-118 — Boulangerie Dupont — 22/03/2025 — Total TTC : 37,80 EUR",
+              "expected_output": "{\"vendor\": \"Boulangerie Dupont\", \"invoice_number\": \"F2025-118\", \"date\": \"2025-03-22\", \"total\": 37.8, \"currency\": \"EUR\"}",
+              "output": "{\n  \"vendor\": \"Boulangerie Dupont\",\n  \"invoice_number\": \"F2025-118\",\n  \"date\": \"2025-03-22\",\n  \"total\": 37.8,\n  \"currency\": \"EUR\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Uber receipt\nTrip on Apr 2, 2025\nFare A$23.10\nBooking fee A$2.50\nTotal A$25.60",
+              "expected_output": "{\"vendor\": \"Uber\", \"invoice_number\": null, \"date\": \"2025-04-02\", \"total\": 25.6, \"currency\": \"AUD\"}",
+              "output": "{\n  \"vendor\": \"Uber\",\n  \"invoice_number\": null,\n  \"date\": \"2025-04-02\",\n  \"total\": 25.6,\n  \"currency\": \"AUD\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Statement / Invoice 3391-B from Northwind Traders. Invoice date: 2024-12-05. Due date: 2025-01-04. Balance due CHF 2'350.00",
+              "expected_output": "{\"vendor\": \"Northwind Traders\", \"invoice_number\": \"3391-B\", \"date\": \"2024-12-05\", \"total\": 2350.0, \"currency\": \"CHF\"}",
+              "output": "{\n  \"vendor\": \"Northwind Traders\",\n  \"invoice_number\": \"3391-B\",\n  \"date\": \"2024-12-05\",\n  \"total\": 2350.0,\n  \"currency\": \"CHF\"\n}",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "GreenLeaf Grocers receipt #000918\n05 Jan 2025\nItems: 12\nSUBTOTAL 41.20\nDISCOUNT -5.00\nTOTAL 36.20 USD",
+              "expected_output": "{\"vendor\": \"GreenLeaf Grocers\", \"invoice_number\": \"000918\", \"date\": \"2025-01-05\", \"total\": 36.2, \"currency\": \"USD\"}",
+              "output": "{\n  \"vendor\": \"GreenLeaf Grocers\",\n  \"invoice_number\": \"000918\",\n  \"date\": \"2025-01-05\",\n  \"total\": 36.2,\n  \"currency\": \"USD\"\n}",
+              "score": 1.0,
+              "error": null
+            }
+          ],
+          "mean_score": 1.0
+        }
+      ],
+      "best_candidate_id": "it0-c0",
+      "best_score": 1.0,
+      "critique": null
+    }
+  ],
+  "n_train": 12,
+  "n_val": 6,
+  "usage": {
+    "calls": 0,
+    "cache_hits": 61,
+    "prompt_tokens": 0,
+    "completion_tokens": 0
+  }
+}

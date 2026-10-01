@@ -1,0 +1,511 @@
+{
+  "task_name": "ag_news",
+  "target_model": "groq/qwen/qwen3.8-27b",
+  "optimizer_model": "groq/qwen/qwen3.8-27b",
+  "scorer": "exact",
+  "best_candidate": {
+    "id": "it0-c0",
+    "prompt": "Classify the topic of the news article provided. Respond with only one label from this list: world, sports, business, sci/tech. Do not include any punctuation, explanations, or markdown.",
+    "iteration": 0,
+    "parent_ids": []
+  },
+  "train_score": 1.0,
+  "val_score": 0.8333333333333334,
+  "val_eval": {
+    "candidate_id": "it0-c0",
+    "results": [
+      {
+        "input": "Frail Pope Celebrates Mass at Lourdes LOURDES, France - A frail Pope John Paul II, breathing heavily and gasping at times, celebrated an open-air Mass on Sunday for several hundred thousand pilgrims, many in wheelchairs, at a shrine to the Virgin Mary that is associated with miraculous cures.    At one point he said \"help me\" in Polish while struggling through his homily in French...",
+        "expected_output": "world",
+        "output": "world",
+        "score": 1.0,
+        "error": null
+      },
+      {
+        "input": "Mighty Ortiz makes sure Sox can rest easy Just imagine what David Ortiz could do on a good night's rest. Ortiz spent the night before last with his baby boy, D'Angelo, who is barely 1 month old. He had planned on attending the Red Sox' Family Day at Fenway Park yesterday morning, but he had to sleep in. After all, Ortiz had a son at home, and he ...",
+        "expected_output": "sports",
+        "output": "sports",
+        "score": 1.0,
+        "error": null
+      },
+      {
+        "input": "Treasuries Slip as Stocks Rally  NEW YORK (Reuters) - U.S. Treasury debt prices slipped on  Monday, though traders characterized the move as profit-taking  rather than any fundamental change in sentiment.",
+        "expected_output": "business",
+        "output": "business",
+        "score": 1.0,
+        "error": null
+      },
+      {
+        "input": "Calif. Aims to Limit Farm-Related Smog (AP) AP - Southern California's smog-fighting agency went after emissions of the bovine variety Friday, adopting the nation's first rules to reduce air pollution from dairy cow manure.",
+        "expected_output": "sci/tech",
+        "output": "world",
+        "score": 0.0,
+        "error": null
+      },
+      {
+        "input": "Venezuela Prepares for Chavez Recall Vote Supporters and rivals warn of possible fraud; government says Chavez's defeat could produce turmoil in world oil market.",
+        "expected_output": "world",
+        "output": "world",
+        "score": 1.0,
+        "error": null
+      },
+      {
+        "input": "They've caught his eye In  quot;helping themselves, quot; Ricky Bryant, Chas Gessner, Michael Jennings, and David Patten did nothing Friday night to make Bill Belichick's decision on what to do with his receivers any easier.",
+        "expected_output": "sports",
+        "output": "sports",
+        "score": 1.0,
+        "error": null
+      },
+      {
+        "input": "Dollar Rises Vs Euro on Asset Flows Data  NEW YORK (Reuters) - The dollar extended gains against the  euro on Monday after a report on flows into U.S. assets showed  enough of a rise in foreign investments to offset the current  account gap for the month.",
+        "expected_output": "business",
+        "output": "business",
+        "score": 1.0,
+        "error": null
+      },
+      {
+        "input": "Open Letter Against British Copyright Indoctrination in Schools The British Department for Education and Skills (DfES) recently launched a \"Music Manifesto\" campaign, with the ostensible intention of educating the next generation of British musicians. Unfortunately, they also teamed up with the music industry (EMI, and various artists) to make this popular. EMI has apparently negotiated their end well, so that children in our schools will now be indoctrinated about the illegality of downloading music.The ignorance and audacity of this got to me a little, so I wrote an open letter to the DfES about it. Unfortunately, it's pedantic, as I suppose you have to be when writing to goverment representatives. But I hope you find it useful, and perhaps feel inspired to do something similar, if or when the same thing has happened in your area.",
+        "expected_output": "sci/tech",
+        "output": "world",
+        "score": 0.0,
+        "error": null
+      },
+      {
+        "input": "1994 Law Designed to Preserve Guard Jobs (AP) AP - A 1994 law strengthened job protections for National Guard and Reserve troops called to active duty. Here are major provisions of the Uniformed Services Employment and Reemployment Rights Act (USERRA).",
+        "expected_output": "world",
+        "output": "world",
+        "score": 1.0,
+        "error": null
+      },
+      {
+        "input": "Indians Mount Charge The Cleveland Indians pulled within one game of the AL Central lead by beating the Minnesota Twins, 7-1, Saturday night with home runs by Travis Hafner and Victor Martinez.",
+        "expected_output": "sports",
+        "output": "sports",
+        "score": 1.0,
+        "error": null
+      },
+      {
+        "input": "Dollar Near Recent Lows, Awaits ZEW/CPI  LONDON (Reuters) - The dollar held steady near this week's  four-week low against the euro on Tuesday with investors  awaiting a German investor confidence survey and U.S. consumer  inflation numbers to shed light on the direction.",
+        "expected_output": "business",
+        "output": "business",
+        "score": 1.0,
+        "error": null
+      },
+      {
+        "input": "Loosing the War on Terrorism \\\\\"Sven Jaschan, self-confessed author of the Netsky and Sasser viruses, is\\responsible for 70 percent of virus infections in 2004, according to a six-month\\virus roundup published Wednesday by antivirus company Sophos.\"\\\\\"The 18-year-old Jaschan was taken into custody in Germany in May by police who\\said he had admitted programming both the Netsky and Sasser worms, something\\experts at Microsoft confirmed. (A Microsoft antivirus reward program led to the\\teenager's arrest.) During the five months preceding Jaschan's capture, there\\were at least 25 variants of Netsky and one of the port-scanning network worm\\Sasser.\"\\\\\"Graham Cluley, senior technology consultant at Sophos, said it was staggeri ...\\\\",
+        "expected_output": "sci/tech",
+        "output": "sci/tech",
+        "score": 1.0,
+        "error": null
+      }
+    ],
+    "mean_score": 0.8333333333333334
+  },
+  "baseline_train_score": 0.25,
+  "baseline_val_score": 0.25,
+  "stop_reason": "target_reached",
+  "history": [
+    {
+      "iteration": 0,
+      "candidates": [
+        {
+          "id": "baseline",
+          "prompt": "Classify the topic of a news article.",
+          "iteration": 0,
+          "parent_ids": []
+        },
+        {
+          "id": "it0-c0",
+          "prompt": "Classify the topic of the news article provided. Respond with only one label from this list: world, sports, business, sci/tech. Do not include any punctuation, explanations, or markdown.",
+          "iteration": 0,
+          "parent_ids": []
+        },
+        {
+          "id": "it0-c1",
+          "prompt": "You are a news classifier. Analyze the input text and assign it to exactly one of the following categories:\n- world: International news, politics, crime, government affairs, or social issues (including US state-level politics if not strictly local crime/traffic).\n- sports: Athletic competitions, athletes, games, and scores.\n- business: Corporate news, finance, markets, labor disputes, and economic reports.\n- sci/tech: Science discoveries, technology, space exploration, and medical breakthroughs.\n\nOutput Rules:\n1. Output ONLY the category label (lowercase).\n2. Do not add any other text, prefixes, or formatting.\n3. If a story involves both politics and crime (e.g., police misconduct investigations by government officials), classify as 'world'.\n4. If a story involves a corporate labor dispute or pension issue, classify as 'business'.",
+          "iteration": 0,
+          "parent_ids": []
+        },
+        {
+          "id": "it0-c2",
+          "prompt": "Task: Classify the news headline and snippet into a single topic category.\nAllowed labels: world, sports, business, sci/tech.\n\nExample:\nInput: \"Sister of man who died in Vancouver police custody slams chief (Canadian Press) Canadian Press - VANCOUVER (CP) - The sister of a man who died after a violent confrontation with police has demanded the city's chief constable resign for defending the officer involved.\"\nOutput: world\n\nInput: \"Giddy Phelps Touches Gold for First Time Michael Phelps won the gold medal in the 400 individual medley and set a world record in a time of 4 minutes 8.26 seconds.\"\nOutput: sports\n\nInput: \"Fears for T N pension after talks Unions representing workers at Turner Newall say they are 'disappointed' after talks with stricken parent firm Federal Mogul.\"\nOutput: business\n\nInput: \"The Race is On: Second Private Team Sets Launch Date for Human Spaceflight (SPACE.com) SPACE.com - TORONTO, Canada -- A second\\team of rocketeers competing for the #36;10 million Ansari X Prize, a contest for\\privately funded suborbital space flight, has officially announced the first\\launch date for its manned rocket.\"\nOutput: sci/tech\n\nInput: \"Man Sought #36;50M From McGreevey, Aides Say (AP) AP - The man who claims Gov. James E. McGreevey sexually harassed him was pushing for a cash settlement of up to #36;50 million before the governor decided to announce that he was gay and had an extramarital affair, sources told The Associated Press.\"\nOutput: world\n\nNow classify the following input. Respond with only the label.",
+          "iteration": 0,
+          "parent_ids": []
+        }
+      ],
+      "evals": [
+        {
+          "candidate_id": "baseline",
+          "results": [
+            {
+              "input": "Sister of man who died in Vancouver police custody slams chief (Canadian Press) Canadian Press - VANCOUVER (CP) - The sister of a man who died after a violent confrontation with police has demanded the city's chief constable resign for defending the officer involved.",
+              "expected_output": "world",
+              "output": "The article discusses a dispute between a family member and a police chief regarding an officer's conduct and the subsequent death of a man in custody. This involves law enforcement, public safety, and legal accountability.\n\n**Topic: Crime / Law & Order**",
+              "score": 0.0,
+              "error": null
+            },
+            {
+              "input": "Giddy Phelps Touches Gold for First Time Michael Phelps won the gold medal in the 400 individual medley and set a world record in a time of 4 minutes 8.26 seconds.",
+              "expected_output": "sports",
+              "output": "Sports",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Fears for T N pension after talks Unions representing workers at Turner   Newall say they are 'disappointed' after talks with stricken parent firm Federal Mogul.",
+              "expected_output": "business",
+              "output": "Business",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "The Race is On: Second Private Team Sets Launch Date for Human Spaceflight (SPACE.com) SPACE.com - TORONTO, Canada -- A second\\team of rocketeers competing for the  #36;10 million Ansari X Prize, a contest for\\privately funded suborbital space flight, has officially announced the first\\launch date for its manned rocket.",
+              "expected_output": "sci/tech",
+              "output": "The article discusses a private team setting a launch date for a manned rocket as part of the Ansari X Prize, which is a competition for privately funded suborbital space flight. This subject matter falls squarely within the domain of space exploration and aerospace technology.\n\n**Topic: Science & Technology (specifically Space Exploration)**",
+              "score": 0.0,
+              "error": null
+            },
+            {
+              "input": "Man Sought  #36;50M From McGreevey, Aides Say (AP) AP - The man who claims Gov. James E. McGreevey sexually harassed him was pushing for a cash settlement of up to  #36;50 million before the governor decided to announce that he was gay and had an extramarital affair, sources told The Associated Press.",
+              "expected_output": "world",
+              "output": "The article discusses a legal dispute involving a state governor, specifically focusing on allegations of sexual harassment and a demand for a significant financial settlement. Since the content centers on government officials, legal claims, and political fallout, this falls under the category of politics and government affairs.\n\n**Topic: Politics / Government**",
+              "score": 0.0,
+              "error": null
+            },
+            {
+              "input": "Tougher rules won't soften Law's game FOXBOROUGH -- Looking at his ridiculously developed upper body, with huge biceps and hardly an ounce of fat, it's easy to see why Ty Law, arguably the best cornerback in football, chooses physical play over finesse. That's not to imply that he's lacking a finesse component, because he can shut down his side of the field much as Deion Sanders ...",
+              "expected_output": "sports",
+              "output": "The article discusses Ty Law, a professional American football player, focusing on his physical attributes, playing style, and status as a top cornerback. It references specific football terminology (cornerback, shutting down his side of the field) and compares him to another football legend, Deion Sanders.\n\nTherefore, the topic of this news article is **Sports** (specifically **American Football**).",
+              "score": 0.0,
+              "error": null
+            },
+            {
+              "input": "Retailers Vie for Back-To-School Buyers (Reuters) Reuters - Apparel retailers are hoping their\\back-to-school fashions will make the grade among\\style-conscious teens and young adults this fall, but it could\\be a tough sell, with students and parents keeping a tighter\\hold on their wallets.",
+              "expected_output": "business",
+              "output": "Business",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Ky. Company Wins Grant to Study Peptides (AP) AP - A company founded by a chemistry researcher at the University of Louisville won a grant to develop a method of producing better peptides, which are short chains of amino acids, the building blocks of proteins.",
+              "expected_output": "sci/tech",
+              "output": "The article discusses a company securing a grant to develop methods for producing peptides, which are fundamental components of proteins. This subject matter falls squarely within the realm of scientific research, specifically chemistry and biochemistry.\n\n**Topic: Science / Technology**",
+              "score": 0.0,
+              "error": null
+            },
+            {
+              "input": "Explosions Echo Throughout Najaf NAJAF, Iraq - Explosions and gunfire rattled through the city of Najaf as U.S. troops in armored vehicles and tanks rolled back into the streets here Sunday, a day after the collapse of talks - and with them a temporary cease-fire - intended to end the fighting in this holy city...",
+              "expected_output": "world",
+              "output": "The text describes military operations, including explosions, gunfire, and the deployment of U.S. troops in Najaf, Iraq, following the breakdown of a cease-fire. These elements clearly indicate a conflict or war-related event.\n\n**Topic: War / Conflict / Military**",
+              "score": 0.0,
+              "error": null
+            },
+            {
+              "input": "Shoppach doesn't appear ready to hit the next level With the weeks dwindling until Jason Varitek enters free agency, the Red Sox continue to carefully monitor Kelly Shoppach , their catcher of the future, in his climb toward the majors. The Sox like most of what they have seen at Triple A Pawtucket from Shoppach, though it remains highly uncertain whether he can make the adjustments at the plate ...",
+              "expected_output": "sports",
+              "output": "The text discusses professional baseball players (Jason Varitek, Kelly Shoppach), team management decisions (Boston Red Sox), and player development within the minor league system (Triple A Pawtucket). Therefore, the topic is **Sports**.",
+              "score": 0.0,
+              "error": null
+            },
+            {
+              "input": "Dollar Briefly Hits 4-Wk Low Vs Euro  LONDON (Reuters) - The dollar dipped to a four-week low  against the euro on Monday before rising slightly on  profit-taking, but steep oil prices and weak U.S. data  continued to fan worries about the health of the world's  largest economy.",
+              "expected_output": "business",
+              "output": "The article discusses currency exchange rates (dollar vs. euro), oil prices, and economic data, all of which are core components of financial markets and economic analysis.\n\n**Topic: Business / Finance**",
+              "score": 0.0,
+              "error": null
+            },
+            {
+              "input": "Prediction Unit Helps Forecast Wildfires (AP) AP - It's barely dawn when Mike Fitzpatrick starts his shift with a blur of colorful maps, figures and endless charts, but already he knows what the day will bring. Lightning will strike in places he expects. Winds will pick up, moist places will dry and flames will roar.",
+              "expected_output": "sci/tech",
+              "output": "The article describes the work of a prediction unit focused on forecasting wildfires, detailing how meteorological factors like lightning, wind, and dryness are monitored to anticipate fire activity. This subject matter falls squarely within the domain of natural phenomena and environmental monitoring.\n\n**Topic: Science / Environment**",
+              "score": 0.0,
+              "error": null
+            }
+          ],
+          "mean_score": 0.25
+        },
+        {
+          "candidate_id": "it0-c0",
+          "results": [
+            {
+              "input": "Sister of man who died in Vancouver police custody slams chief (Canadian Press) Canadian Press - VANCOUVER (CP) - The sister of a man who died after a violent confrontation with police has demanded the city's chief constable resign for defending the officer involved.",
+              "expected_output": "world",
+              "output": "world",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Giddy Phelps Touches Gold for First Time Michael Phelps won the gold medal in the 400 individual medley and set a world record in a time of 4 minutes 8.26 seconds.",
+              "expected_output": "sports",
+              "output": "sports",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Fears for T N pension after talks Unions representing workers at Turner   Newall say they are 'disappointed' after talks with stricken parent firm Federal Mogul.",
+              "expected_output": "business",
+              "output": "business",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "The Race is On: Second Private Team Sets Launch Date for Human Spaceflight (SPACE.com) SPACE.com - TORONTO, Canada -- A second\\team of rocketeers competing for the  #36;10 million Ansari X Prize, a contest for\\privately funded suborbital space flight, has officially announced the first\\launch date for its manned rocket.",
+              "expected_output": "sci/tech",
+              "output": "sci/tech",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Man Sought  #36;50M From McGreevey, Aides Say (AP) AP - The man who claims Gov. James E. McGreevey sexually harassed him was pushing for a cash settlement of up to  #36;50 million before the governor decided to announce that he was gay and had an extramarital affair, sources told The Associated Press.",
+              "expected_output": "world",
+              "output": "world",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Tougher rules won't soften Law's game FOXBOROUGH -- Looking at his ridiculously developed upper body, with huge biceps and hardly an ounce of fat, it's easy to see why Ty Law, arguably the best cornerback in football, chooses physical play over finesse. That's not to imply that he's lacking a finesse component, because he can shut down his side of the field much as Deion Sanders ...",
+              "expected_output": "sports",
+              "output": "sports",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Retailers Vie for Back-To-School Buyers (Reuters) Reuters - Apparel retailers are hoping their\\back-to-school fashions will make the grade among\\style-conscious teens and young adults this fall, but it could\\be a tough sell, with students and parents keeping a tighter\\hold on their wallets.",
+              "expected_output": "business",
+              "output": "business",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Ky. Company Wins Grant to Study Peptides (AP) AP - A company founded by a chemistry researcher at the University of Louisville won a grant to develop a method of producing better peptides, which are short chains of amino acids, the building blocks of proteins.",
+              "expected_output": "sci/tech",
+              "output": "sci/tech",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Explosions Echo Throughout Najaf NAJAF, Iraq - Explosions and gunfire rattled through the city of Najaf as U.S. troops in armored vehicles and tanks rolled back into the streets here Sunday, a day after the collapse of talks - and with them a temporary cease-fire - intended to end the fighting in this holy city...",
+              "expected_output": "world",
+              "output": "world",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Shoppach doesn't appear ready to hit the next level With the weeks dwindling until Jason Varitek enters free agency, the Red Sox continue to carefully monitor Kelly Shoppach , their catcher of the future, in his climb toward the majors. The Sox like most of what they have seen at Triple A Pawtucket from Shoppach, though it remains highly uncertain whether he can make the adjustments at the plate ...",
+              "expected_output": "sports",
+              "output": "sports",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Dollar Briefly Hits 4-Wk Low Vs Euro  LONDON (Reuters) - The dollar dipped to a four-week low  against the euro on Monday before rising slightly on  profit-taking, but steep oil prices and weak U.S. data  continued to fan worries about the health of the world's  largest economy.",
+              "expected_output": "business",
+              "output": "business",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Prediction Unit Helps Forecast Wildfires (AP) AP - It's barely dawn when Mike Fitzpatrick starts his shift with a blur of colorful maps, figures and endless charts, but already he knows what the day will bring. Lightning will strike in places he expects. Winds will pick up, moist places will dry and flames will roar.",
+              "expected_output": "sci/tech",
+              "output": "sci/tech",
+              "score": 1.0,
+              "error": null
+            }
+          ],
+          "mean_score": 1.0
+        },
+        {
+          "candidate_id": "it0-c1",
+          "results": [
+            {
+              "input": "Sister of man who died in Vancouver police custody slams chief (Canadian Press) Canadian Press - VANCOUVER (CP) - The sister of a man who died after a violent confrontation with police has demanded the city's chief constable resign for defending the officer involved.",
+              "expected_output": "world",
+              "output": "world",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Giddy Phelps Touches Gold for First Time Michael Phelps won the gold medal in the 400 individual medley and set a world record in a time of 4 minutes 8.26 seconds.",
+              "expected_output": "sports",
+              "output": "sports",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Fears for T N pension after talks Unions representing workers at Turner   Newall say they are 'disappointed' after talks with stricken parent firm Federal Mogul.",
+              "expected_output": "business",
+              "output": "business",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "The Race is On: Second Private Team Sets Launch Date for Human Spaceflight (SPACE.com) SPACE.com - TORONTO, Canada -- A second\\team of rocketeers competing for the  #36;10 million Ansari X Prize, a contest for\\privately funded suborbital space flight, has officially announced the first\\launch date for its manned rocket.",
+              "expected_output": "sci/tech",
+              "output": "sci/tech",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Man Sought  #36;50M From McGreevey, Aides Say (AP) AP - The man who claims Gov. James E. McGreevey sexually harassed him was pushing for a cash settlement of up to  #36;50 million before the governor decided to announce that he was gay and had an extramarital affair, sources told The Associated Press.",
+              "expected_output": "world",
+              "output": "world",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Tougher rules won't soften Law's game FOXBOROUGH -- Looking at his ridiculously developed upper body, with huge biceps and hardly an ounce of fat, it's easy to see why Ty Law, arguably the best cornerback in football, chooses physical play over finesse. That's not to imply that he's lacking a finesse component, because he can shut down his side of the field much as Deion Sanders ...",
+              "expected_output": "sports",
+              "output": "sports",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Retailers Vie for Back-To-School Buyers (Reuters) Reuters - Apparel retailers are hoping their\\back-to-school fashions will make the grade among\\style-conscious teens and young adults this fall, but it could\\be a tough sell, with students and parents keeping a tighter\\hold on their wallets.",
+              "expected_output": "business",
+              "output": "business",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Ky. Company Wins Grant to Study Peptides (AP) AP - A company founded by a chemistry researcher at the University of Louisville won a grant to develop a method of producing better peptides, which are short chains of amino acids, the building blocks of proteins.",
+              "expected_output": "sci/tech",
+              "output": "sci/tech",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Explosions Echo Throughout Najaf NAJAF, Iraq - Explosions and gunfire rattled through the city of Najaf as U.S. troops in armored vehicles and tanks rolled back into the streets here Sunday, a day after the collapse of talks - and with them a temporary cease-fire - intended to end the fighting in this holy city...",
+              "expected_output": "world",
+              "output": "world",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Shoppach doesn't appear ready to hit the next level With the weeks dwindling until Jason Varitek enters free agency, the Red Sox continue to carefully monitor Kelly Shoppach , their catcher of the future, in his climb toward the majors. The Sox like most of what they have seen at Triple A Pawtucket from Shoppach, though it remains highly uncertain whether he can make the adjustments at the plate ...",
+              "expected_output": "sports",
+              "output": "sports",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Dollar Briefly Hits 4-Wk Low Vs Euro  LONDON (Reuters) - The dollar dipped to a four-week low  against the euro on Monday before rising slightly on  profit-taking, but steep oil prices and weak U.S. data  continued to fan worries about the health of the world's  largest economy.",
+              "expected_output": "business",
+              "output": "business",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Prediction Unit Helps Forecast Wildfires (AP) AP - It's barely dawn when Mike Fitzpatrick starts his shift with a blur of colorful maps, figures and endless charts, but already he knows what the day will bring. Lightning will strike in places he expects. Winds will pick up, moist places will dry and flames will roar.",
+              "expected_output": "sci/tech",
+              "output": "sci/tech",
+              "score": 1.0,
+              "error": null
+            }
+          ],
+          "mean_score": 1.0
+        },
+        {
+          "candidate_id": "it0-c2",
+          "results": [
+            {
+              "input": "Sister of man who died in Vancouver police custody slams chief (Canadian Press) Canadian Press - VANCOUVER (CP) - The sister of a man who died after a violent confrontation with police has demanded the city's chief constable resign for defending the officer involved.",
+              "expected_output": "world",
+              "output": "world",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Giddy Phelps Touches Gold for First Time Michael Phelps won the gold medal in the 400 individual medley and set a world record in a time of 4 minutes 8.26 seconds.",
+              "expected_output": "sports",
+              "output": "sports",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Fears for T N pension after talks Unions representing workers at Turner   Newall say they are 'disappointed' after talks with stricken parent firm Federal Mogul.",
+              "expected_output": "business",
+              "output": "business",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "The Race is On: Second Private Team Sets Launch Date for Human Spaceflight (SPACE.com) SPACE.com - TORONTO, Canada -- A second\\team of rocketeers competing for the  #36;10 million Ansari X Prize, a contest for\\privately funded suborbital space flight, has officially announced the first\\launch date for its manned rocket.",
+              "expected_output": "sci/tech",
+              "output": "sci/tech",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Man Sought  #36;50M From McGreevey, Aides Say (AP) AP - The man who claims Gov. James E. McGreevey sexually harassed him was pushing for a cash settlement of up to  #36;50 million before the governor decided to announce that he was gay and had an extramarital affair, sources told The Associated Press.",
+              "expected_output": "world",
+              "output": "world",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Tougher rules won't soften Law's game FOXBOROUGH -- Looking at his ridiculously developed upper body, with huge biceps and hardly an ounce of fat, it's easy to see why Ty Law, arguably the best cornerback in football, chooses physical play over finesse. That's not to imply that he's lacking a finesse component, because he can shut down his side of the field much as Deion Sanders ...",
+              "expected_output": "sports",
+              "output": "sports",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Retailers Vie for Back-To-School Buyers (Reuters) Reuters - Apparel retailers are hoping their\\back-to-school fashions will make the grade among\\style-conscious teens and young adults this fall, but it could\\be a tough sell, with students and parents keeping a tighter\\hold on their wallets.",
+              "expected_output": "business",
+              "output": "business",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Ky. Company Wins Grant to Study Peptides (AP) AP - A company founded by a chemistry researcher at the University of Louisville won a grant to develop a method of producing better peptides, which are short chains of amino acids, the building blocks of proteins.",
+              "expected_output": "sci/tech",
+              "output": "sci/tech",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Explosions Echo Throughout Najaf NAJAF, Iraq - Explosions and gunfire rattled through the city of Najaf as U.S. troops in armored vehicles and tanks rolled back into the streets here Sunday, a day after the collapse of talks - and with them a temporary cease-fire - intended to end the fighting in this holy city...",
+              "expected_output": "world",
+              "output": "world",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Shoppach doesn't appear ready to hit the next level With the weeks dwindling until Jason Varitek enters free agency, the Red Sox continue to carefully monitor Kelly Shoppach , their catcher of the future, in his climb toward the majors. The Sox like most of what they have seen at Triple A Pawtucket from Shoppach, though it remains highly uncertain whether he can make the adjustments at the plate ...",
+              "expected_output": "sports",
+              "output": "sports",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Dollar Briefly Hits 4-Wk Low Vs Euro  LONDON (Reuters) - The dollar dipped to a four-week low  against the euro on Monday before rising slightly on  profit-taking, but steep oil prices and weak U.S. data  continued to fan worries about the health of the world's  largest economy.",
+              "expected_output": "business",
+              "output": "business",
+              "score": 1.0,
+              "error": null
+            },
+            {
+              "input": "Prediction Unit Helps Forecast Wildfires (AP) AP - It's barely dawn when Mike Fitzpatrick starts his shift with a blur of colorful maps, figures and endless charts, but already he knows what the day will bring. Lightning will strike in places he expects. Winds will pick up, moist places will dry and flames will roar.",
+              "expected_output": "sci/tech",
+              "output": "sci/tech",
+              "score": 1.0,
+              "error": null
+            }
+          ],
+          "mean_score": 1.0
+        }
+      ],
+      "best_candidate_id": "it0-c0",
+      "best_score": 1.0,
+      "critique": null
+    }
+  ],
+  "n_train": 12,
+  "n_val": 12,
+  "usage": {
+    "calls": 98,
+    "cache_hits": 0,
+    "prompt_tokens": 14575,
+    "completion_tokens": 1773
+  }
+}

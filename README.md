@@ -20,10 +20,29 @@ Everything runs on the user's key; the server stores no keys and no user data.
 
 ## Benchmarks
 
-See [`benchmarks/RESULTS.md`](benchmarks/RESULTS.md) for the latest numbers and how to
-reproduce them.
-
 <!-- RESULTS:START -->
+Held-out accuracy with `groq/qwen/qwen3.8-27b` (free tier) as both target and optimiser.
+Baseline = the task description used as the prompt.
+
+| task | scorer | train / val | baseline | optimised | Δ |
+|---|---|---|---|---|---|
+| [AG News](https://huggingface.co/datasets/fancyzhx/ag_news) topic classification | exact | 12 / 12 | 25% | **83%** | +58 pts |
+| [GSM8K](https://huggingface.co/datasets/openai/gsm8k) maths, answer only | exact | 12 / 12 | 0% | **42%** | +42 pts |
+| Invoice → JSON extraction (hand-written) | json_match | 12 / 6 | 67% | **97%** | +30 pts |
+
+What drove the gains:
+
+- **AG News:** the raw description doesn't say which labels to use; the optimised prompt
+  learned the exact label set (`world`, `sports`, `business`, `sci/tech`) from examples.
+- **Invoice:** the optimised prompt inferred unstated conventions (ISO dates, numeric
+  totals, ISO currency codes, `null` for missing fields).
+- **GSM8K:** the baseline always shows its working, so it never matches a bare number.
+  Prompts that force a bare number fix the format but cost reasoning accuracy, and three
+  rounds of refinement didn't beat round 1, so the loop stopped on a plateau. A scorer that
+  extracts the final number from worked answers would separate those two effects.
+
+Validation sets are small (a dozen examples, ~8 points each), so treat these as
+indicative. Reproduce with the commands in [Development](#development).
 <!-- RESULTS:END -->
 
 ## How it works
