@@ -1,0 +1,11 @@
+# Render blueprint: New > Blueprint > pick this repo. Free plan sleeps when idle, so
+# the first request after a while takes ~30-60s.
+services:
+  - type: web
+    name: promptloop
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: PROMPTLOOP_MAX_ACTIVE_RUNS
+        value: "3"

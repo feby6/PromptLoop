@@ -1,43 +1,141 @@
 # PromptLoop
 
-PromptLoop finds a strong prompt for a task automatically. Give it a task description and
-input → expected-output examples; it runs an iterative loop (generate → execute → evaluate →
-critique → refine) against a chosen model and returns the best prompt, its score on held-out
-examples, a per-iteration score history, prompt diffs, and the cases that still fail.
+**Describe a task, give an example, and let your own model find the prompt that works
+best — scored on examples it never saw.**
 
-Runs on free hosted APIs (Groq, OpenRouter, Gemini) via LiteLLM; any LiteLLM-supported
-provider works if you supply a key.
+PromptLoop is an automatic prompt optimiser with a web UI. You fill in a task
+description, one or more input → expected-output examples, your API key and your
+preferred model. PromptLoop then:
 
-> Status: early development.
+1. drafts extra examples for you to review (one example isn't enough to score honestly),
+2. writes 3 candidate prompts,
+3. runs each on your examples with your model and scores the outputs,
+4. has your model critique the best prompt's failures and write improved candidates,
+5. repeats until the score stops improving,
 
-## Setup
+and reports the best prompt, its score on held-out examples **vs. your task description
+used as-is**, how the prompt evolved (word-level diffs), and the cases that still fail.
+
+Everything runs on the user's key; the server stores no keys and no user data.
+
+## Benchmarks
+
+See [`benchmarks/RESULTS.md`](benchmarks/RESULTS.md) for the latest numbers and how to
+reproduce them.
+
+<!-- RESULTS:START -->
+<!-- RESULTS:END -->
+
+## How it works
+
+```mermaid
+flowchart LR
+    subgraph Browser["React frontend"]
+        F[Task + examples + key + model] --> R[Review generated examples]
+        R --> P[Live progress chart]
+        P --> Res[Results: score vs baseline, diffs, failures]
+    end
+    subgraph API["FastAPI backend"]
+        G["POST /api/examples/generate"]
+        C["POST /api/runs"]
+        E["GET /api/runs/{id}/events (SSE)"]
+    end
+    subgraph Loop["Optimisation loop (LangGraph)"]
+        gen[generate] --> ev[evaluate on train]
+        ev -->|not done| cr[critique failures] --> rf[refine top-k] --> ev
+        ev -->|target / max rounds / plateau| fin[finalize: score on held-out val]
+    end
+    F --> G
+    R --> C --> Loop
+    Loop -. events .-> E -.-> P
+    Loop <--> LLM["LiteLLM → user's model (Groq, Gemini, OpenRouter, OpenAI, Anthropic, ...)"]
+```
+
+- **Honest scoring.** Examples are split into train and held-out val. The optimiser only
+  ever sees train; val is used once, at the end, for the winner and for the baseline.
+  The baseline (the task description itself) also competes in round 1, so a refined
+  prompt has to actually beat it.
+- **Scorers.** `exact` (normalised string match) for labels and short answers,
+  `json_match` (JSON validity + per-field accuracy) for extraction, and an LLM `judge`
+  with a rubric for free-form text. The web UI picks one automatically from the
+  expected outputs.
+- **Respects whatever tier the user is on.** No limits are imposed up front; every call
+  goes through one client that backs off on 429s (honouring `Retry-After` and pausing
+  all requests to that provider), and stops the run with a clear message if the quota
+  runs out rather than counting it as wrong answers. Optional local limits and fallback
+  models are in config, and a response cache makes reruns free.
+- **Keys stay secret.** A user's key is held in memory for one run, never logged, cached
+  or written to disk, and scrubbed from error messages.
+
+## Quick start
+
+Requires Python 3.12 and [uv](https://docs.astral.sh/uv/). Node 20+ for the frontend.
 
 ```bash
 uv sync
-cp .env.example .env   # then paste your API keys
-uv run promptloop --help
+cp .env.example .env          # add a free key, e.g. GROQ_API_KEY (dev/CLI only)
+
+# CLI: score the baseline, then optimise
+uv run promptloop baseline examples/tasks/invoice_extraction
+uv run promptloop run examples/tasks/invoice_extraction
+
+# Web app (API + built frontend on http://127.0.0.1:8000)
+cd frontend && npm install && npm run build && cd ..
+uv run promptloop serve
 ```
 
-## Usage
+For frontend development, run `uv run promptloop serve --reload` and, in `frontend/`,
+`npm run dev` (Vite proxies `/api` to the backend).
 
-Score the unoptimised baseline (the task description used as the prompt) on train and
-held-out val examples:
+## Task folders (CLI)
 
-```bash
-uv run promptloop baseline examples/tasks/sentiment
+```
+examples/tasks/<name>/
+  task.yaml      # name, description, scorer (exact | json_match | judge), optional models/rubric
+  train.jsonl    # {"input": "...", "expected_output": "..."} per line, 10+ lines
+  val.jsonl      # held-out examples, never shown to the optimiser
 ```
 
-A task is a folder with `task.yaml`, `train.jsonl` and `val.jsonl`; see
-[`examples/tasks/sentiment`](examples/tasks/sentiment). Scorers: `exact` (normalised string
-match) and `json_match` (JSON validity + per-field accuracy).
+Model names, provider rate limits, fallbacks and loop settings live in
+[`config/providers.yaml`](config/providers.yaml). CLI runs write every round plus a
+markdown report to `runs/<timestamp>-<task>/`.
 
-Provider rate limits, fallbacks and default models live in
-[`config/providers.yaml`](config/providers.yaml). Every LLM call is cached in `.cache/`,
-so reruns are free.
+## API
+
+| method | path | purpose |
+|---|---|---|
+| GET | `/api/config` | suggested models and limits for the form |
+| POST | `/api/examples/generate` | draft extra examples from the user's seeds |
+| POST | `/api/runs` | start a run (returns `run_id`) |
+| GET | `/api/runs/{id}` | status, result, lineage, all events |
+| GET | `/api/runs/{id}/events` | live progress as Server-Sent Events |
+| DELETE | `/api/runs/{id}` | cancel |
+
+Interactive docs at `/docs` when the server is running.
 
 ## Development
 
 ```bash
-uv run ruff check . && uv run pytest   # offline; LLM calls are mocked
-uv run pytest -m live                  # real API calls, needs a key in .env
+uv run ruff check . && uv run pytest     # offline; all LLM calls are mocked
+uv run pytest -m live                    # real API calls, needs a key in .env
+cd frontend && npm run typecheck
+```
+
+Benchmarks: `uv run python benchmarks/prepare.py && uv run python benchmarks/run.py`.
+Deployment (Docker, Hugging Face Spaces, Render, Vercel): [`docs/DEPLOY.md`](docs/DEPLOY.md).
+
+## Project layout
+
+```
+src/promptloop/
+  config.py, models.py, data.py   settings, Pydantic models, task loading/splitting
+  llm.py                          LiteLLM client: cache, rate limits, retries, fallback, keys
+  prompts/*.txt                   the optimiser's own prompt templates
+  scorers/                        exact, json_match, judge
+  optimizer/                      synthesize, generate, execute, evaluate, critique, refine, graph
+  report.py                       lineage, diffs, markdown report, run logs
+  api/                            FastAPI app, run manager, SSE
+  cli.py                          promptloop baseline | run | serve
+frontend/                         React + TypeScript + Vite
+benchmarks/                       public-dataset tasks and results
 ```
