@@ -2,7 +2,7 @@
 
 import hashlib
 import json
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, computed_field, model_validator
 
@@ -60,6 +60,10 @@ class ExampleResult(_Model):
 
 
 class EvalResult(_Model):
+    # `mean_score` is a computed field, so it appears in dumped JSON; ignore it on load
+    # instead of rejecting it as an unknown field.
+    model_config = ConfigDict(extra="ignore")
+
     candidate_id: str
     results: list[ExampleResult]
 
@@ -77,22 +81,78 @@ class EvalResult(_Model):
         return [r for r in self.results if r.error]
 
 
+class ScoredCandidate(_Model):
+    """A candidate together with its train-set evaluation."""
+
+    candidate: Candidate
+    evaluation: EvalResult
+
+    @property
+    def score(self) -> float:
+        return self.evaluation.mean_score
+
+
 class IterationRecord(_Model):
+    """One scoring round: the candidates evaluated in it and the best-so-far after it."""
+
     iteration: int
     candidates: list[Candidate]
     evals: list[EvalResult]
+    # Best over *all* rounds so far, not just this one, so the history is monotonic and
+    # plateau detection is a simple comparison.
     best_candidate_id: str
     best_score: float
+    # The critique that produced this round's candidates (None for the initial round).
     critique: str | None = None
+
+
+StopReason = Literal["target_reached", "max_iterations", "plateau"]
+
+
+class LLMUsage(_Model):
+    """Counts for one LLMClient, so users can see what a run cost their quota."""
+
+    calls: int = 0  # requests actually sent, including retries
+    cache_hits: int = 0
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
 
 
 class RunResult(_Model):
     task_name: str
+    target_model: str
+    optimizer_model: str
+    scorer: ScorerName
     best_candidate: Candidate
     train_score: float
-    val_score: float | None = None
+    # Headline number: the best prompt on examples the optimiser never saw.
+    val_score: float
+    val_eval: EvalResult
+    # The task description used verbatim as the prompt; None when the baseline is disabled.
+    baseline_train_score: float | None = None
+    baseline_val_score: float | None = None
+    stop_reason: StopReason
     history: list[IterationRecord] = Field(default_factory=list)
-    val_failures: list[ExampleResult] = Field(default_factory=list)
+    n_train: int
+    n_val: int
+    usage: LLMUsage = Field(default_factory=LLMUsage)
+
+    @property
+    def val_failures(self) -> list[ExampleResult]:
+        return self.val_eval.failures()
+
+
+EventType = Literal["phase", "candidates", "iteration", "result", "error", "cancelled"]
+TERMINAL_EVENTS: frozenset[str] = frozenset({"result", "error", "cancelled"})
+
+
+class RunEvent(_Model):
+    """Progress update emitted by the optimisation loop (streamed to the web UI)."""
+
+    seq: int = 0  # assigned by whoever records the event stream
+    type: EventType
+    message: str
+    data: dict[str, Any] = Field(default_factory=dict)
 
 
 class Message(_Model):

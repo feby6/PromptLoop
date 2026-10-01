@@ -3,7 +3,7 @@ import json
 import pytest
 
 from promptloop.scorers import ExactScorer, JsonMatchScorer, get_scorer, normalise
-from promptloop.scorers.json_match import _MISSING, extract_json
+from promptloop.scorers.json_match import NOT_JSON, extract_json
 
 
 @pytest.mark.parametrize(
@@ -52,7 +52,7 @@ def test_extract_json(text: str, expected: object) -> None:
 
 
 def test_extract_json_failure() -> None:
-    assert extract_json("no json here {oops") is _MISSING
+    assert extract_json("no json here {oops") is NOT_JSON
 
 
 def _j(obj: object) -> str:
@@ -99,5 +99,5 @@ def test_json_non_object_expected() -> None:
 def test_get_scorer() -> None:
     assert get_scorer("exact").name == "exact"
     assert get_scorer("json_match").name == "json_match"
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(ValueError, match="needs an LLM"):
         get_scorer("judge")

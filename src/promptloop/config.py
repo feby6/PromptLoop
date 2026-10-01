@@ -35,11 +35,19 @@ class RetrySettings(_Strict):
 
 
 class LoopSettings(_Strict):
-    n_candidates: int = Field(default=4, gt=0)
+    n_candidates: int = Field(default=3, gt=0)
     top_k: int = Field(default=2, gt=0)
     max_iterations: int = Field(default=5, gt=0)
     plateau_patience: int = Field(default=2, gt=0)
     target_score: float = Field(default=1.0, ge=0, le=1)
+    include_baseline: bool = True
+
+
+class SynthesisSettings(_Strict):
+    target_total: int = Field(default=16, gt=0)
+    val_fraction: float = Field(default=0.3, gt=0, lt=1)
+    min_val: int = Field(default=2, gt=0)
+    min_examples: int = Field(default=6, gt=1)
 
 
 class Settings(_Strict):
@@ -48,6 +56,8 @@ class Settings(_Strict):
     defaults: ModelDefaults
     retry: RetrySettings = Field(default_factory=RetrySettings)
     loop: LoopSettings = Field(default_factory=LoopSettings)
+    synthesis: SynthesisSettings = Field(default_factory=SynthesisSettings)
+    suggested_models: list[str] = Field(default_factory=list)
     cache_dir: Path = PROJECT_ROOT / ".cache"
     runs_dir: Path = PROJECT_ROOT / "runs"
 

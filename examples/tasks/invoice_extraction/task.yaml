@@ -1,0 +1,6 @@
+name: invoice_extraction
+description: >-
+  Extract fields from the text of an invoice or receipt and return them as JSON with
+  the keys vendor, invoice_number, date, total and currency.
+scorer: json_match
+rubric: null

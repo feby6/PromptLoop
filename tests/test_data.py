@@ -4,7 +4,8 @@ from pathlib import Path
 import pytest
 
 from promptloop.config import PROJECT_ROOT, Settings
-from promptloop.data import DataError, load_examples, load_task
+from promptloop.data import DataError, load_examples, load_task, split_examples
+from promptloop.models import Example
 
 
 def _write_task(
@@ -90,3 +91,22 @@ def test_json_match_task_requires_json_expected(tmp_path: Path) -> None:
     )
     with pytest.raises(DataError, match="train.jsonl example 1: expected_output is not JSON"):
         load_task(root)
+
+
+def _examples(n: int) -> list[Example]:
+    return [Example(input=f"i{k}", expected_output="o") for k in range(n)]
+
+
+def test_split_examples_sizes_and_determinism() -> None:
+    train, val = split_examples(_examples(16), val_fraction=0.3, min_val=2)
+    assert (len(train), len(val)) == (11, 5)
+    assert {e.input for e in train}.isdisjoint({e.input for e in val})
+    again_train, again_val = split_examples(_examples(16), val_fraction=0.3, min_val=2)
+    assert again_train == train and again_val == val
+
+
+def test_split_examples_min_val_and_keeps_train() -> None:
+    assert [len(x) for x in split_examples(_examples(6), 0.1, min_val=2)] == [4, 2]
+    assert [len(x) for x in split_examples(_examples(2), 0.5, min_val=5)] == [1, 1]
+    with pytest.raises(DataError):
+        split_examples(_examples(1), 0.3, min_val=1)

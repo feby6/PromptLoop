@@ -1,0 +1,19 @@
+You are reviewing a system prompt that a language model followed to perform a task. Some of its outputs were wrong. Diagnose why.
+
+## Task
+$task
+
+## System prompt under review
+<prompt>
+$prompt
+</prompt>
+
+## Average score on training examples: $score
+
+## Failed cases
+$failures
+
+In at most 200 words:
+1. Identify the patterns behind these failures (wrong format, extra text, misunderstood labels, missing rules, ambiguous instructions, ...).
+2. Propose specific changes to the prompt that would fix them without breaking cases that already pass.
+Do not rewrite the whole prompt.

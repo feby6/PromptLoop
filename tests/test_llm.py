@@ -11,6 +11,8 @@ from promptloop.config import ProviderLimits, Settings
 from promptloop.llm import (
     LLMClient,
     LLMError,
+    MemoryCache,
+    QuotaExhausted,
     RateLimiter,
     estimate_tokens,
     strip_reasoning,
@@ -174,3 +176,111 @@ def test_strip_reasoning() -> None:
 
 def test_estimate_tokens() -> None:
     assert estimate_tokens(request("x" * 400, max_tokens=50)) == 150
+
+
+def test_user_key_is_passed_per_call(settings: Settings, cache: Cache) -> None:
+    fake = FakeCompletion("ok")
+    llm = LLMClient(settings, cache=cache, completion_fn=fake, api_keys={"groq": "user-key"})
+    llm.complete(request())
+    assert fake.calls[0]["api_key"] == "user-key"
+
+
+def test_env_keys_can_be_disallowed(settings: Settings, cache: Cache) -> None:
+    fake = FakeCompletion("ok")
+    llm = LLMClient(settings, cache=cache, completion_fn=fake, allow_env_keys=False)
+    with pytest.raises(LLMError, match="no API key provided for provider 'groq'"):
+        llm.complete(request())
+    assert fake.calls == []
+
+
+def test_key_is_redacted_from_errors(settings: Settings, cache: Cache) -> None:
+    secret = "sk-very-secret-123"
+    fake = FakeCompletion(litellm.AuthenticationError(f"bad key {secret}", "groq", "groq/target"))
+    llm = LLMClient(settings, cache=cache, completion_fn=fake, api_keys={"groq": secret})
+    with pytest.raises(LLMError) as info:
+        llm.complete(request())
+    assert secret not in str(info.value) and "***" in str(info.value)
+    assert info.value.__cause__ is None  # nothing chained that could leak it
+
+
+def test_key_is_not_part_of_cache_key(settings: Settings, cache: Cache) -> None:
+    fake = FakeCompletion("first", "second")
+    keys = ["user-key-AAA", "user-key-BBB"]
+    for key in keys:
+        resp = LLMClient(
+            settings, cache=cache, completion_fn=fake, api_keys={"groq": key}
+        ).complete(request())
+    # Same request with a different key is a cache hit, and no key is stored anywhere.
+    assert resp.cached and resp.content == "first"
+    stored = " ".join(f"{k}={cache.get(k)}" for k in cache.iterkeys())
+    assert "user-key" not in stored
+
+
+def test_usage_counts_calls_retries_and_cache_hits(settings: Settings, cache: Cache) -> None:
+    fake, clock = FakeCompletion(rate_limit_error(), "ok"), FakeClock()
+    llm = client(settings, cache, fake, clock)
+    llm.complete(request())
+    llm.complete(request())
+    assert llm.usage.model_dump() == {
+        "calls": 2,
+        "cache_hits": 1,
+        "prompt_tokens": 10,
+        "completion_tokens": 2,
+    }
+
+
+def test_memory_cache_behaves_like_diskcache(settings: Settings) -> None:
+    mem = MemoryCache()
+    assert mem.add("k", 0) and not mem.add("k", 5)
+    assert mem.incr("k") == 1 and mem.incr("k", 2) == 3
+    assert mem.get("missing") is None and mem.get("missing", 1) == 1
+    fake = FakeCompletion("a", "b")
+    llm = LLMClient(settings, cache=mem, completion_fn=fake)
+    assert llm.complete(request()).content == "a"
+    assert llm.complete(request()).cached
+    llm.close()
+    assert mem.get("k") is None
+
+
+def test_limiter_learns_output_length_for_tpm_budget() -> None:
+    clock = FakeClock()
+    limiter = RateLimiter(ProviderLimits(tpm=1000, concurrency=5), clock, clock.sleep)
+    assert limiter.expected_completion == 256
+
+    async def run() -> None:
+        async with limiter.slot(100) as slot:
+            limiter.record_usage(slot, prompt_tokens=50, completion_tokens=600)
+
+    asyncio.run(run())
+    assert limiter.expected_completion == 600
+    assert estimate_tokens(request("x" * 400), limiter.expected_completion) == 700
+
+
+def test_429_pauses_the_whole_provider() -> None:
+    clock = FakeClock()
+    limiter = RateLimiter(ProviderLimits(concurrency=5), clock, clock.sleep)
+    limiter.pause(20.0)
+
+    async def run() -> None:
+        async with limiter.slot(1):
+            pass
+
+    asyncio.run(run())
+    assert clock.sleeps == [20.0]
+
+
+def test_rate_limit_retry_pauses_provider(settings: Settings, cache: Cache) -> None:
+    fake, clock = FakeCompletion(rate_limit_error(retry_after="5"), "ok"), FakeClock()
+    llm = client(settings, cache, fake, clock)
+    llm.complete(request())
+    # The retrying request slept 5s itself; the shared cooldown had expired by then.
+    assert clock.sleeps == [5.0]
+    assert llm._limiter("groq")._cooldown_until == 5.0
+
+
+def test_quota_exhausted_is_distinct(settings: Settings, cache: Cache) -> None:
+    settings.providers["groq"] = ProviderLimits(rpd=1)
+    llm = client(settings, cache, FakeCompletion(), FakeClock())
+    llm.complete(request("one"))
+    with pytest.raises(QuotaExhausted, match="try again later"):
+        llm.complete(request("two"))

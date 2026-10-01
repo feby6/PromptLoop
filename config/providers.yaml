@@ -1,37 +1,21 @@
-# Provider limits and model defaults. Model names live here, never in code.
+# Provider settings and model defaults. Model names live here, never in code.
 #
-# Limits are per provider (the LiteLLM prefix: groq/, gemini/, openrouter/, ...).
-# Any limit can be null (= not enforced locally; 429 retries still apply).
-# Free-tier limits change: re-check them before relying on these numbers.
+# Users bring their own keys, on whatever tier they pay for, so no rate limits are
+# imposed up front. The client reacts to what the provider actually says instead: 429s
+# back off (honouring Retry-After) and pause every request to that provider.
+#
+# Optional local limits per provider prefix (groq/, gemini/, openai/, ...) can be set
+# when you know them, e.g. to stay under a free tier during development:
+#   groq: {rpm: 30, rpd: 1000, tpm: 8000, concurrency: 2}
 
 providers:
-  # Verified 2026-10-01 from Groq response headers for qwen/qwen3.8-27b:
-  # 1000 requests/day, 8000 tokens/min. Groq's RPM is not in the headers; 30 is its
-  # documented free-tier figure for most models.
-  groq:
-    rpm: 30
-    rpd: 1000
-    tpm: 8000
-    concurrency: 2
-
-  # Not yet verified (no key configured). Conservative placeholders.
-  gemini:
-    rpm: 10
-    rpd: 250
-    tpm: null
-    concurrency: 2
-  openrouter:
-    rpm: 20
-    rpd: 50
-    tpm: null
-    concurrency: 1
-
-  # Used for any provider not listed above (e.g. anthropic/, openai/ with a user key).
+  # Used for every provider without its own entry: no local limits, just a cap on
+  # concurrent requests so one run doesn't open dozens of connections at once.
   default:
-    rpm: 30
+    rpm: null
     rpd: null
     tpm: null
-    concurrency: 2
+    concurrency: 4
 
 # When a model hits its daily cap or keeps returning 429, try these in order.
 fallbacks: {}
@@ -42,14 +26,28 @@ defaults:
   optimizer_model: groq/qwen/qwen3.8-27b
 
 retry:
-  max_retries: 5
+  max_retries: 6          # 429s back off 2,4,8,16,32,60s: enough to outlast a 1-min window
   backoff_base_s: 2.0
   backoff_max_s: 60.0
   request_timeout_s: 60.0
 
 loop:
-  n_candidates: 4
-  top_k: 2
-  max_iterations: 5
-  plateau_patience: 2
-  target_score: 1.0
+  n_candidates: 3        # new candidates per round (the baseline is scored on top of these)
+  top_k: 2               # beam width: parents carried into each refinement
+  max_iterations: 5      # scoring rounds, including the initial one
+  plateau_patience: 2    # stop after this many rounds without a better best score
+  target_score: 1.0      # stop early once the best train score reaches this
+  include_baseline: true # also score the raw task description, for an honest comparison
+
+synthesis:
+  target_total: 16       # web UI tops the user's examples up to roughly this many
+  val_fraction: 0.3      # share of examples held out for the final, unseen evaluation
+  min_val: 2
+  min_examples: 6        # a run needs at least this many examples in total
+
+# Shown as suggestions in the web UI; users can type any LiteLLM model string.
+# Only list models verified to exist (checked 2026-10-01 via Groq's /models endpoint).
+suggested_models:
+  - groq/qwen/qwen3.8-27b
+  - groq/openai/gpt-oss-120b
+  - groq/openai/gpt-oss-20b

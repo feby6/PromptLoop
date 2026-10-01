@@ -70,7 +70,7 @@ def test_evaluate_scores_and_zeroes_errors() -> None:
         ExampleOutput(input="b", expected_output="negative", output="positive"),
         ExampleOutput(input="c", expected_output="neutral", output="", error="timeout"),
     ]
-    ev = evaluate("c1", outputs, ExactScorer())
+    ev = asyncio.run(evaluate("c1", outputs, ExactScorer()))
     assert [r.score for r in ev.results] == [1.0, 0.0, 0.0]
     assert ev.mean_score == 1 / 3
     assert [r.input for r in ev.failures()] == ["b", "c"]

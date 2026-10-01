@@ -63,3 +63,31 @@ def test_baseline_invalid_task(tmp_path: Path) -> None:
     result = runner.invoke(cli.app, ["baseline", str(tmp_path)])
     assert result.exit_code == 1
     assert "Invalid task" in result.output
+
+
+def test_run_optimises_and_writes_logs(
+    task_dir: Path, fake_llm: Any, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from fakes import loop_responder
+
+    # Settings are loaded inside the command, so point runs_dir via the config file.
+    cfg = tmp_path / "providers.yaml"
+    cfg.write_text(
+        "defaults: {target_model: groq/target, optimizer_model: groq/opt}\n"
+        f"runs_dir: {tmp_path / 'runs'}\n"
+    )
+    monkeypatch.setenv("PROMPTLOOP_CONFIG", str(cfg))
+    fake_llm(loop_responder(lambda prompt, _: "yes" if prompt.startswith("v2") else "no"))
+
+    result = runner.invoke(cli.app, ["run", str(task_dir), "--max-iterations", "3"])
+    assert result.exit_code == 0, result.output
+    assert "Best prompt" in result.output and "v2" in result.output
+    report = next((tmp_path / "runs").glob("*-toy/report.md"))
+    assert "optimised" in report.read_text()
+
+
+def test_run_reports_failure(task_dir: Path, fake_llm: Any) -> None:
+    fake_llm(lambda _: litellm.AuthenticationError("bad key", "groq", "groq/target"))
+    result = runner.invoke(cli.app, ["run", str(task_dir), "--no-log"])
+    assert result.exit_code == 1
+    assert "Run failed" in result.output

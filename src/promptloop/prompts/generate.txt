@@ -1,0 +1,16 @@
+You are an expert prompt engineer. Write $n different system prompts for a language model that will perform the task below.
+
+How the prompts are used: each prompt is sent as the system message, the task input is sent as the user message, and the model's reply is compared against the expected output.
+
+## Task
+$task
+
+## Example inputs and expected outputs
+$examples
+
+## Requirements
+- Each prompt must make the model reply with ONLY the expected output, in exactly the format shown in the examples: no preamble, explanation, labels or markdown unless the examples contain them.
+- Make the prompts genuinely different in approach, for example: one short and direct; one with explicit rules and edge cases; one with a brief worked example.
+- Infer the rules from the examples (output format, label set, casing, how ambiguous cases are handled) and state them explicitly.
+
+Return a JSON array of $n strings, one string per prompt, and nothing else.

@@ -1,6 +1,7 @@
 """Load a task directory: task.yaml + train.jsonl + val.jsonl."""
 
 import json
+import random
 from pathlib import Path
 
 import yaml
@@ -87,3 +88,21 @@ def _check_expected_json(examples: list[Example], filename: str) -> None:
             json.loads(example.expected_output)
         except json.JSONDecodeError as e:
             raise DataError(f"{filename} example {i}: expected_output is not JSON: {e}") from e
+
+
+def split_examples(
+    examples: list[Example], val_fraction: float, min_val: int, seed: int = 0
+) -> tuple[list[Example], list[Example]]:
+    """Shuffle deterministically and hold out a val split (web runs, where the user
+    supplies one pool of examples). The fixed seed makes reruns comparable and cacheable.
+
+    At least one example always stays in train, so the optimiser has something to learn
+    from even when the pool is tiny.
+    """
+    if len(examples) < 2:
+        raise DataError("need at least 2 examples to hold some out for validation")
+    shuffled = list(examples)
+    random.Random(seed).shuffle(shuffled)
+    n_val = max(min_val, round(len(shuffled) * val_fraction))
+    n_val = min(n_val, len(shuffled) - 1)
+    return shuffled[n_val:], shuffled[:n_val]

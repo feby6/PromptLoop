@@ -1,9 +1,8 @@
 """Run a candidate prompt on examples with the target model."""
 
-import asyncio
-
-from promptloop.llm import LLMClient, LLMError
+from promptloop.llm import LLMClient, LLMError, QuotaExhausted
 from promptloop.models import Candidate, Example, ExampleOutput, LLMRequest, Message
+from promptloop.optimizer.common import gather_or_cancel
 
 
 def build_request(
@@ -23,6 +22,8 @@ def build_request(
 async def _run_one(llm: LLMClient, request: LLMRequest, example: Example) -> ExampleOutput:
     try:
         response = await llm.acomplete(request)
+    except QuotaExhausted:
+        raise  # not this example's fault: stop the run instead of scoring it 0
     except LLMError as e:
         return ExampleOutput(
             input=example.input, expected_output=example.expected_output, output="", error=str(e)
@@ -45,13 +46,11 @@ async def execute_candidate(
     """Run `candidate` on every example concurrently (the client enforces rate limits).
 
     Outputs keep the order of `examples`. A failed call becomes an output with `error`
-    set instead of aborting the whole batch.
+    set instead of aborting the whole batch, except QuotaExhausted, which aborts it.
     """
-    return list(
-        await asyncio.gather(
-            *(
-                _run_one(llm, build_request(candidate.prompt, ex, model, temperature), ex)
-                for ex in examples
-            )
+    return await gather_or_cancel(
+        *(
+            _run_one(llm, build_request(candidate.prompt, ex, model, temperature), ex)
+            for ex in examples
         )
     )

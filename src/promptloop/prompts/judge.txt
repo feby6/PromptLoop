@@ -1,0 +1,20 @@
+You are grading a language model's output for the task below.
+
+## Task
+$task
+
+## Grading rubric
+$rubric
+
+## Input
+$input
+
+## Reference output
+$expected
+
+## Model output
+$output
+
+Score the model output from 0 to 10 against the rubric, treating the reference output as the correct answer (0 = wrong or unusable, 10 = fully correct). Judge meaning and correctness, not wording, unless the rubric says otherwise.
+
+Return only this JSON: {"reason": "<one sentence>", "score": <integer 0-10>}

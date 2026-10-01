@@ -14,23 +14,28 @@ from typing import Any
 from promptloop.scorers.base import normalise
 
 _FENCE_RE = re.compile(r"```(?:json)?\s*(.*?)```", re.DOTALL | re.IGNORECASE)
-_MISSING = object()
+# Sentinel for "nothing parsed", distinct from a valid JSON `null` (which parses to None).
+NOT_JSON = object()
 
 
 def extract_json(text: str) -> Any:
     """Parse JSON from model output: raw, inside a ``` fence, or the outermost {...}/[...]
-    span. Returns `_MISSING` when nothing parses (JSON `null` is a valid result)."""
+    span. Returns `NOT_JSON` when nothing parses (JSON `null` is a valid result)."""
     candidates = [text.strip(), *(m.strip() for m in _FENCE_RE.findall(text))]
+    # Outermost spans, tried in the order they open: for `Here: ["use {x}"]` the array
+    # is the answer, and the braces inside it must not be tried first.
+    spans = []
     for open_ch, close_ch in ("{}", "[]"):
         start, end = text.find(open_ch), text.rfind(close_ch)
         if 0 <= start < end:
-            candidates.append(text[start : end + 1])
+            spans.append((start, text[start : end + 1]))
+    candidates += [span for _, span in sorted(spans)]
     for candidate in candidates:
         try:
             return json.loads(candidate)
         except json.JSONDecodeError:
             continue
-    return _MISSING
+    return NOT_JSON
 
 
 def values_equal(got: Any, expected: Any) -> bool:
@@ -57,7 +62,7 @@ class JsonMatchScorer:
     def score(self, output: str, expected: str) -> float:
         want = json.loads(expected)  # validated at load time; a failure here is a data bug
         got = extract_json(output)
-        if got is _MISSING:
+        if got is NOT_JSON:
             return 0.0
         if not isinstance(want, dict) or not want:
             return 1.0 if values_equal(got, want) else 0.0

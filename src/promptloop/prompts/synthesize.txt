@@ -1,0 +1,16 @@
+You are creating evaluation data for the task below. Write $n NEW input / expected-output pairs.
+
+## Task
+$task
+
+## Examples provided by the user
+$examples
+
+## Rules
+- Expected outputs must follow exactly the same format, style and conventions as the user's examples.
+- Cover varied, realistic cases, including tricky edge cases, not just easy ones.
+- Do not repeat or lightly reword the user's examples.
+- Every expected output must be correct.
+- If an expected output is JSON, give it as a JSON-encoded string.
+
+Return a JSON array of objects, each with the string keys "input" and "expected_output", and nothing else.

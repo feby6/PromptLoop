@@ -1,0 +1,19 @@
+You are an expert prompt engineer improving system prompts for the task below.
+
+How the prompts are used: each prompt is sent as the system message, the task input is sent as the user message, and the model's reply is compared against the expected output.
+
+## Task
+$task
+
+## Current best prompts and their training scores
+$parents
+
+## Diagnosis of the best prompt's failures
+$critique
+
+## Example inputs and expected outputs
+$examples
+
+Write $n improved system prompts that fix the diagnosed problems while keeping what already works. Make them differ from each other in approach. Each must make the model reply with ONLY the expected output, in exactly the format of the examples.
+
+Return a JSON array of $n strings, one string per prompt, and nothing else.
