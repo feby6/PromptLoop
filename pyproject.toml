@@ -1,0 +1,43 @@
+[project]
+name = "promptloop"
+version = "0.1.0"
+description = "Automatic prompt optimisation: generate, execute, evaluate, critique, refine."
+readme = "README.md"
+authors = [
+    { name = "Feby Das", email = "febydas.work@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "diskcache>=5.6.3",
+    "langgraph>=1.2.12",
+    "litellm>=1.103.2",
+    "pydantic>=2.13.5",
+    "python-dotenv>=1.2.4",
+    "pyyaml>=6.0.3",
+    "rich>=15.0.0",
+    "typer>=0.27.2",
+]
+
+[project.scripts]
+promptloop = "promptloop.cli:app"
+
+[build-system]
+requires = ["uv_build>=0.12.21,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.16.9",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["live: hits real provider APIs (needs keys in .env)"]

@@ -1,0 +1,16 @@
+# Secrets
+.env
+
+# Run artefacts and LLM cache
+runs/
+.cache/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.ruff_cache/
+.pytest_cache/
+
+# OS
+.DS_Store
