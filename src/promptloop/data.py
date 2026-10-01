@@ -75,4 +75,15 @@ def load_task(task_dir: Path, settings: Settings | None = None) -> TaskBundle:
     leaked = {e.input for e in train} & {e.input for e in val}
     if leaked:
         raise DataError(f"{len(leaked)} input(s) appear in both train and val")
+    if task.scorer == "json_match":
+        _check_expected_json(train, "train.jsonl")
+        _check_expected_json(val, "val.jsonl")
     return TaskBundle(task=task, train=train, val=val, path=task_dir)
+
+
+def _check_expected_json(examples: list[Example], filename: str) -> None:
+    for i, example in enumerate(examples, start=1):
+        try:
+            json.loads(example.expected_output)
+        except json.JSONDecodeError as e:
+            raise DataError(f"{filename} example {i}: expected_output is not JSON: {e}") from e

@@ -80,3 +80,13 @@ def test_example_missing_field(tmp_path: Path) -> None:
     path.write_text('{"input": "a"}\n')
     with pytest.raises(DataError, match=r"train.jsonl:1"):
         load_examples(path)
+
+
+def test_json_match_task_requires_json_expected(tmp_path: Path) -> None:
+    root = _write_task(
+        tmp_path / "t",
+        task_yaml="name: t\ndescription: d\nscorer: json_match\n"
+        "target_model: groq/a\noptimizer_model: groq/b\n",
+    )
+    with pytest.raises(DataError, match="train.jsonl example 1: expected_output is not JSON"):
+        load_task(root)

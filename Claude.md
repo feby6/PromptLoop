@@ -111,7 +111,7 @@ Log every iteration (prompts, scores, critique) to `runs/<timestamp>/` as JSON.
       `GEMINI_API_KEY=` placeholders, `git init`, and a first commit. Then tell the
       user to copy `.env.example` to `.env` and paste their keys.
 - [x] M1: project setup, config, models, data loading, LLM wrapper with cache + retries
-- [ ] M2: scorers (exact, json_match) + baseline evaluation of a single prompt
+- [x] M2: scorers (exact, json_match) + baseline evaluation of a single prompt
 - [ ] M3: full optimisation loop in LangGraph + CLI
 - [ ] M4: held-out validation, run logging, report (history + diffs + failures)
 - [ ] M5: Streamlit UI (upload task + examples, live iteration view, results)

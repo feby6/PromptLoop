@@ -41,11 +41,22 @@ class Candidate(_Model):
     parent_ids: list[str] = Field(default_factory=list)
 
 
+class ExampleOutput(_Model):
+    """A target-model output for one example, before scoring."""
+
+    input: str
+    expected_output: str
+    output: str
+    error: str | None = None  # set when the LLM call failed; output is then ""
+    cached: bool = False
+
+
 class ExampleResult(_Model):
     input: str
     expected_output: str
     output: str
     score: float = Field(ge=0, le=1)
+    error: str | None = None
 
 
 class EvalResult(_Model):
@@ -58,8 +69,12 @@ class EvalResult(_Model):
         return sum(r.score for r in self.results) / len(self.results) if self.results else 0.0
 
     def failures(self, threshold: float = 1.0) -> list[ExampleResult]:
-        """Examples scoring below `threshold`."""
+        """Examples scoring below `threshold` (including failed calls)."""
         return [r for r in self.results if r.score < threshold]
+
+    def errors(self) -> list[ExampleResult]:
+        """Examples whose LLM call failed."""
+        return [r for r in self.results if r.error]
 
 
 class IterationRecord(_Model):

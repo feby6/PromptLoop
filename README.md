@@ -18,6 +18,19 @@ cp .env.example .env   # then paste your API keys
 uv run promptloop --help
 ```
 
+## Usage
+
+Score the unoptimised baseline (the task description used as the prompt) on train and
+held-out val examples:
+
+```bash
+uv run promptloop baseline examples/tasks/sentiment
+```
+
+A task is a folder with `task.yaml`, `train.jsonl` and `val.jsonl`; see
+[`examples/tasks/sentiment`](examples/tasks/sentiment). Scorers: `exact` (normalised string
+match) and `json_match` (JSON validity + per-field accuracy).
+
 Provider rate limits, fallbacks and default models live in
 [`config/providers.yaml`](config/providers.yaml). Every LLM call is cached in `.cache/`,
 so reruns are free.
