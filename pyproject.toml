@@ -40,4 +40,7 @@ select = ["E", "F", "I", "UP", "B"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "-m 'not live'"
 markers = ["live: hits real provider APIs (needs keys in .env)"]
+# Raised inside litellm's own types, not our code.
+filterwarnings = ["ignore:Item .* is using the `ReadOnly` qualifier:UserWarning"]

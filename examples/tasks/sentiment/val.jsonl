@@ -1,0 +1,8 @@
+{"input": "Absolutely love it — setup took two minutes and it just works.", "expected_output": "positive"}
+{"input": "Smells like chemicals and gave me a headache. Avoid.", "expected_output": "negative"}
+{"input": "Package contained the charger and a manual.", "expected_output": "neutral"}
+{"input": "I wanted to like it, but the app crashes every time I open it.", "expected_output": "negative"}
+{"input": "Great sound for such a small speaker.", "expected_output": "positive"}
+{"input": "It's fine. I use it occasionally.", "expected_output": "neutral"}
+{"input": "Oh great, another cable that frays within a month. Fantastic.", "expected_output": "negative"}
+{"input": "Size runs as expected; I ordered my usual medium.", "expected_output": "neutral"}

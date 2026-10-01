@@ -1,0 +1,12 @@
+{"input": "Battery lasts two full days and the screen is gorgeous. Best phone I've owned.", "expected_output": "positive"}
+{"input": "Stopped charging after a week. Support never replied to my emails.", "expected_output": "negative"}
+{"input": "It's a kettle. It boils water. Nothing more to say.", "expected_output": "neutral"}
+{"input": "The headphones are comfortable, but the left ear cut out twice on day one.", "expected_output": "negative"}
+{"input": "Arrived on time and matches the description.", "expected_output": "neutral"}
+{"input": "Honestly exceeded my expectations for the price. Would buy again.", "expected_output": "positive"}
+{"input": "Cheap plastic, wobbly legs, and two screws were missing.", "expected_output": "negative"}
+{"input": "My kids love this game and we play it every weekend.", "expected_output": "positive"}
+{"input": "The colour is slightly darker than in the photos.", "expected_output": "neutral"}
+{"input": "Not bad, not great. Does what it says.", "expected_output": "neutral"}
+{"input": "Returned it. The zipper broke the first time I used it.", "expected_output": "negative"}
+{"input": "Sturdy, quiet, and easy to clean. Very happy with this blender.", "expected_output": "positive"}

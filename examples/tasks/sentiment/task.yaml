@@ -1,0 +1,7 @@
+name: sentiment
+description: >-
+  Classify the sentiment of a product review as positive, negative, or neutral.
+  Answer with exactly one lowercase word.
+scorer: exact
+# target_model / optimizer_model omitted: defaults come from config/providers.yaml
+rubric: null

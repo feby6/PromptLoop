@@ -1,0 +1,55 @@
+# Provider limits and model defaults. Model names live here, never in code.
+#
+# Limits are per provider (the LiteLLM prefix: groq/, gemini/, openrouter/, ...).
+# Any limit can be null (= not enforced locally; 429 retries still apply).
+# Free-tier limits change: re-check them before relying on these numbers.
+
+providers:
+  # Verified 2026-10-01 from Groq response headers for qwen/qwen3.8-27b:
+  # 1000 requests/day, 8000 tokens/min. Groq's RPM is not in the headers; 30 is its
+  # documented free-tier figure for most models.
+  groq:
+    rpm: 30
+    rpd: 1000
+    tpm: 8000
+    concurrency: 2
+
+  # Not yet verified (no key configured). Conservative placeholders.
+  gemini:
+    rpm: 10
+    rpd: 250
+    tpm: null
+    concurrency: 2
+  openrouter:
+    rpm: 20
+    rpd: 50
+    tpm: null
+    concurrency: 1
+
+  # Used for any provider not listed above (e.g. anthropic/, openai/ with a user key).
+  default:
+    rpm: 30
+    rpd: null
+    tpm: null
+    concurrency: 2
+
+# When a model hits its daily cap or keeps returning 429, try these in order.
+fallbacks: {}
+#  groq/qwen/qwen3.8-27b: [gemini/<model>, openrouter/<model>:free]
+
+defaults:
+  target_model: groq/qwen/qwen3.8-27b
+  optimizer_model: groq/qwen/qwen3.8-27b
+
+retry:
+  max_retries: 5
+  backoff_base_s: 2.0
+  backoff_max_s: 60.0
+  request_timeout_s: 60.0
+
+loop:
+  n_candidates: 4
+  top_k: 2
+  max_iterations: 5
+  plateau_patience: 2
+  target_score: 1.0

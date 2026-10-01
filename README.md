@@ -18,8 +18,13 @@ cp .env.example .env   # then paste your API keys
 uv run promptloop --help
 ```
 
+Provider rate limits, fallbacks and default models live in
+[`config/providers.yaml`](config/providers.yaml). Every LLM call is cached in `.cache/`,
+so reruns are free.
+
 ## Development
 
 ```bash
-uv run ruff check . && uv run pytest
+uv run ruff check . && uv run pytest   # offline; LLM calls are mocked
+uv run pytest -m live                  # real API calls, needs a key in .env
 ```
